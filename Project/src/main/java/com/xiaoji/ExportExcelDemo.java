@@ -1,15 +1,9 @@
-package com.xiaoji.util;
+package com.xiaoji;
 
 import com.xiaoji.model.SheetData;
 import com.xiaoji.model.TestData;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.xiaoji.util.CacheBF;
+import com.xiaoji.util.ExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +22,57 @@ public class ExportExcelDemo {
         ExcelUtil.fileExists(importFilePath,System.getProperty("user.dir")+"/Project/src/doc/ccc.xls");*/
         //Excel2003();
         //Excel2007();
+        Data data= new Data();
+        data.setInfo("hello");
+        data.setName("world");
+        try {
+            CacheBF.cache("123",data,100);
+
+            System.out.println("缓存是否存在："+CacheBF.check("123"));
+            Data da = CacheBF.get("123",Data.class);
+            System.out.println(da);
+
+            CacheBF.delete("123");
+            System.out.println("缓存是否存在："+CacheBF.check("123"));
+            Data dd = CacheBF.get("123",Data.class);
+            System.out.println(dd);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    //测试使用
+    static class Data {
+        private String name;
+        private String info;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getInfo() {
+            return info;
+        }
+
+        public void setInfo(String info) {
+            this.info = info;
+        }
+
+        @Override
+        public String toString() {
+            return "Data{" +
+                    "name='" + name + '\'' +
+                    ", info='" + info + '\'' +
+                    '}';
+        }
+    }
+
+    public static void test (){
         String importFilePath= "E://file/demo/test2.xlsx";
         String exportFilePath= System.getProperty("user.dir")+"/Project/src/doc/ccc.xls";
 

@@ -16,8 +16,8 @@ public class StartRunner implements ApplicationRunner {
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		System.out.println("Database init ...");
-		this.databaseService.initDatabase();
+		//System.out.println("Database init ...");
+		//this.databaseService.initDatabase();
 	}
 
 }

@@ -65,4 +65,4 @@ zuul:
     path:
 
 file:
-  path: ./Project/src/doc/
+  path: E://file/result/
