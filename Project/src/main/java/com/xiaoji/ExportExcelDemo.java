@@ -1,11 +1,15 @@
 package com.xiaoji;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoji.model.SheetData;
 import com.xiaoji.model.TestData;
 import com.xiaoji.util.CacheBF;
 import com.xiaoji.util.ExcelUtil;
+import com.xiaoji.util.ResultResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.beans.BeanMap;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,13 +19,14 @@ import java.util.Map;
 
 public class ExportExcelDemo {
 
-    public static void main(String[] args) throws IOException {
-        /*String importFilePath= "E://file/demo/test2.xls";
+    public static void main(String[] args) throws Exception {
+        test();
+    }
 
-        logger.info(System.getProperty("user.dir")+"/Project/src/doc");
-        ExcelUtil.fileExists(importFilePath,System.getProperty("user.dir")+"/Project/src/doc/ccc.xls");*/
-        //Excel2003();
-        //Excel2007();
+
+
+
+    public void cach(){
         Data data= new Data();
         data.setInfo("hello");
         data.setName("world");
@@ -39,7 +44,6 @@ public class ExportExcelDemo {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     //测试使用
@@ -73,7 +77,7 @@ public class ExportExcelDemo {
     }
 
     public static void test (){
-        String importFilePath= "E://file/demo/test2.xlsx";
+        String importFilePath= "E://file/demo/test.xlsx";
         String exportFilePath= System.getProperty("user.dir")+"/Project/src/doc/ccc.xls";
 
         String strFields1="projectName,demandName,sumNumbers";
@@ -96,7 +100,7 @@ public class ExportExcelDemo {
             sd.addData(map);
         }*/
         sds[0] = sd;
-        logger.info(ExcelUtil.exportExcel(importFilePath,exportFilePath,rowName,sds));
+        logger.info(ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sds));
     }
 
     private static Logger logger = LoggerFactory.getLogger(ExportExcelDemo.class);

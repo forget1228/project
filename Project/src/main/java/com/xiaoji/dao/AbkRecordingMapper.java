@@ -7,4 +7,5 @@ public interface AbkRecordingMapper {
 
     void update(Map map);
 
+    Map findById(String id);
 }

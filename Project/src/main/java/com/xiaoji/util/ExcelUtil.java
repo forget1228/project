@@ -29,6 +29,30 @@ public class ExcelUtil {
     private static InputStream inputStream = null;
     private static FileOutputStream fileOutputStream = null;
 
+    public static String exportExcelFileName(String name){
+        StringBuffer fileName=new StringBuffer(System.getProperty("user.dir"))
+                .append(File.separator).append("Project")   // TODO 发布项目时删除
+                .append(File.separator).append("src")
+                .append(File.separator).append("main")
+                .append(File.separator).append("webapp")
+                .append(File.separator).append("WEB-INF")
+                .append(File.separator).append("export")
+                .append(File.separator).append(name);//获取文件路径
+        return fileName.toString();
+    }
+
+    public static String getExcelFileName(String name){
+        StringBuffer fileName=new StringBuffer(System.getProperty("user.dir"))
+                .append(File.separator).append("Project")   // TODO 发布项目时删除
+                .append(File.separator).append("src")
+                .append(File.separator).append("main")
+                .append(File.separator).append("webapp")
+                .append(File.separator).append("WEB-INF")
+                .append(File.separator).append("excel")
+                .append(File.separator).append(name);//获取文件路径
+        return fileName.toString();
+    }
+
     /**
      * Excel (2007 xlsx 后缀 导出)
      * @param in

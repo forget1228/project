@@ -24,7 +24,9 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public void update(Map map) {
-        abkRecordingMapper.update(map);
-    }
+    public void update(Map map) { abkRecordingMapper.update(map); }
+
+    @Override
+    public Map findById(String id) { return abkRecordingMapper.findById(id); }
+
 }

@@ -1,11 +1,36 @@
 package com.xiaoji.util;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class CommonUtil {
+
+    /**
+     *
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public static File getFile(String path)throws Exception{
+        File file=new File(path);//获取操作对象
+        //判断父目录是否存在
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        //判断当前文件是否存在
+        if (!file.exists()){
+            file.createNewFile();
+        }else {
+            file.delete();
+            file.createNewFile();
+        }
+        System.out.println("路径 path :" + file);
+        return file;
+    }
+
     /**
      * 从实体中解析出字段数据
      * @param data  可能为pojo或者map 从field中解析

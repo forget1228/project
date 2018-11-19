@@ -113,7 +113,7 @@ public class CacheBF {
      * @throws Exception
      */
     private static File getCacheFile(String name)throws Exception{
-
+        System.out.println(CacheBF.getCacheFileName(name));
         File file=new File(CacheBF.getCacheFileName(name));//获取操作对象
         //判断父目录是否存在
         if (!file.getParentFile().exists()){
@@ -137,9 +137,10 @@ public class CacheBF {
     private static String getCacheFileName(String name){
         name=MD5maker.make(name)+".txt";//获取文件名
         StringBuffer fileName=new StringBuffer(System.getProperty("user.dir"))
+                .append(File.separator).append("Project")   // TODO 发布项目时删除
                 .append(File.separator).append("src")
                 .append(File.separator).append("main")
-                .append(File.separator).append("webApp")
+                .append(File.separator).append("webapp")
                 .append(File.separator).append("WEB-INF")
                 .append(File.separator).append("cache")
                 .append(File.separator).append(name);//获取文件路径

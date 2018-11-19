@@ -6,4 +6,6 @@ public interface ProjectService {
     void insert(Map map);
 
     void update(Map map);
+
+    Map findById(String id);
 }
