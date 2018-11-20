@@ -6,9 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiaoji.configuration.config.YmlConfig;
 import com.xiaoji.model.SheetData;
 import com.xiaoji.service.ProjectService;
-import com.xiaoji.util.ExcelUtil;
-import com.xiaoji.util.MessageResult;
-import com.xiaoji.util.ResultResponse;
+import com.xiaoji.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,22 +48,7 @@ public class FileController {
         String templateId = request.getParameter("templateId");
         JSONObject data = JSONObject.parseObject(request.getParameter("data"));
 
-        for (Object s : data.entrySet()){
-            if (s.toString().contains("[")) {
-                //接着进行取list值
-                String key = (String) ((Map.Entry)s).getKey();
-                List lisMap = new ArrayList();
-                lisMap = (List) data.get(key);
-                List list = new ArrayList();
-                for (int i= 0 ;i<lisMap.size();i++){
-                    list.add(lisMap.get(i));
-                }
-                sheetData.addDatas(list);
-            }else {
-                sheetData.put(((Map.Entry)s).getKey().toString(),((Map.Entry) s).getValue());
-            }
-            System.out.println(((Map.Entry)s).getKey()+" ====== "+((Map.Entry)s).getValue());
-        }
+        sheetData = CommonUtil.getData(sheetData, data);
         // 入参检查 入参必须项检查
         if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
         if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
@@ -84,10 +67,89 @@ public class FileController {
             String exportFilePath = ExcelUtil.exportExcelFileName(map.get("template_file").toString());
             String[] rowName = null;
 
-            ExcelUtil.exportExcel(importFilePath,exportFilePath,rowName,sheetData);
+            if (!"success".equals(ExcelUtil.exportExcel(importFilePath,exportFilePath,rowName,sheetData))){
+                return ResultResponse.makeErrRsp("模板数据写入失败");
+            }
         }catch (Exception e){
             e.printStackTrace();
             return ResultResponse.makeErrRsp("文件下载失败");
+        }
+        return ResultResponse.makeOKRsp();
+    }
+
+    @RequestMapping("/cache")
+    @ResponseBody
+    public MessageResult cache(HttpServletRequest request) {
+        SheetData sheetData = new SheetData();
+        // 接收参数
+        String groupSubdomain = request.getParameter("groupSubdomain");
+        String groupSAPrefix = request.getParameter("groupSAPrefix");
+        String templateId = request.getParameter("templateId");
+        String data = request.getParameter("data");
+
+        // 入参检查 入参必须项检查
+        if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
+        if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
+        if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
+        if (sheetData == null || "".equals(sheetData))    return ResultResponse.makeErrRsp("必须注明");
+        // 入参类型检查
+        // 入参长度检查
+        // 入参关联检查
+
+        try {
+            Map map = projectService.findById(templateId);
+            if (map == null || "".equals(map)){
+                return ResultResponse.makeErrRsp("目标模板不存在");
+            }
+            logger.info("生成缓存");
+            String name = map.get("template_name").toString();
+            CacheBF.cache(name, data, 3600);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultResponse.makeErrRsp("生成缓存失败");
+        }
+
+        return ResultResponse.makeOKRsp();
+    }
+
+    @RequestMapping("/findCache")
+    @ResponseBody
+    public MessageResult findCache(HttpServletRequest request) {
+        SheetData sheetData = new SheetData();
+        // 接收参数
+        String groupSubdomain = request.getParameter("groupSubdomain");
+        String groupSAPrefix = request.getParameter("groupSAPrefix");
+        String templateId = request.getParameter("templateId");
+        JSONObject data = JSONObject.parseObject(request.getParameter("data"));
+
+        //sheetData = CommonUtil.getData(sheetData, data);
+
+        // 入参检查 入参必须项检查
+        if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
+        if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
+        if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
+        if (sheetData == null || "".equals(sheetData))    return ResultResponse.makeErrRsp("必须注明");
+        // 入参类型检查
+        // 入参长度检查
+        // 入参关联检查
+
+        try {
+            Map map = projectService.findById(templateId);
+            if (map == null || "".equals(map)){
+                return ResultResponse.makeErrRsp("目标模板不存在");
+            }
+            String name = map.get("template_name").toString();
+            logger.info("name\t"+name);
+            if (CacheBF.check(name)){
+                logger.info("true");
+                logger.info(CacheBF.get(name,SheetData.class)+"");
+            }else {
+                logger.info("false");
+                return ResultResponse.makeErrRsp("没有缓存");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultResponse.makeErrRsp("查询缓存失败");
         }
         return ResultResponse.makeOKRsp();
     }

@@ -26,7 +26,7 @@ public class ExportExcelDemo {
 
 
 
-    public void cach(){
+    public void cache(){
         Data data= new Data();
         data.setInfo("hello");
         data.setName("world");
@@ -77,12 +77,12 @@ public class ExportExcelDemo {
     }
 
     public static void test (){
-        String importFilePath= "E://file/demo/test.xlsx";
-        String exportFilePath= System.getProperty("user.dir")+"/Project/src/doc/ccc.xls";
+        String importFilePath= "E://file/demo/download.xlsx";
+        String exportFilePath= System.getProperty("user.dir")+"/Project/src/main/doc/ccc.xlsx";
 
         String strFields1="projectName,demandName,sumNumbers";
         String[] rowName = strFields1.split(",");
-        SheetData[] sds = new SheetData[2];
+        /*SheetData[] sds = new SheetData[2];
         SheetData sd = new SheetData();
         sd.put("title","12345678中国");
         List list = new ArrayList();
@@ -90,7 +90,7 @@ public class ExportExcelDemo {
             TestData testData = new TestData(i,"test"+i,"-"+i);
             list.add(testData);
         }
-        sd.addDatas(list);
+        sd.addDatas(list);*/
 
         /*for (int i=0;i < 50;i++) {
             Map map = new HashMap();
@@ -99,8 +99,26 @@ public class ExportExcelDemo {
             map.put("sumNumbers","年龄"+i);
             sd.addData(map);
         }*/
-        sds[0] = sd;
-        logger.info(ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sds));
+        //sds[0] = sd;
+        SheetData sheetData = new SheetData();
+        JSONObject data = JSONObject.parseObject(str());
+        for (Object s : data.entrySet()){
+            if (s.toString().contains("[")) {
+                //接着进行取list值
+                String key = (String) ((Map.Entry)s).getKey();
+                List lisMap = new ArrayList();
+                lisMap = (List) data.get(key);
+                List list = new ArrayList();
+                for (int i= 0 ;i<lisMap.size();i++){
+                    list.add(lisMap.get(i));
+                }
+                sheetData.addDatas(list);
+            }else {
+                sheetData.put(((Map.Entry)s).getKey().toString(),((Map.Entry) s).getValue());
+            }
+            System.out.println(((Map.Entry)s).getKey()+" ====== "+((Map.Entry)s).getValue());
+        }
+        logger.info(ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sheetData));
     }
 
     private static Logger logger = LoggerFactory.getLogger(ExportExcelDemo.class);
@@ -174,5 +192,32 @@ public class ExportExcelDemo {
         sds[1] = sd2;
         String str = ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sds);
         logger.info(str);
+    }
+    static String str(){
+        return "{\n" +
+                "\t\"code\":\"\",\n" +
+                "\t\"data\":[\n" +
+                "\t\t{\n" +
+                "\t\t\t\"projectName\":false,\n" +
+                "\t\t\t\"demandName\":\"\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"projectName\":false,\n" +
+                "\t\t\t\"demandName\":\"-\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"projectName\":true,\n" +
+                "\t\t\t\"demandName\":\"A125polS公司\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"projectName\":false,\n" +
+                "\t\t\t\"demandName\":\"CD包公司\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"projectName\":false,\n" +
+                "\t\t\t\"demandName\":\"HDPE公司\"\n" +
+                "\t\t}\n" +
+                "\t]\n" +
+                "}";
     }
 }

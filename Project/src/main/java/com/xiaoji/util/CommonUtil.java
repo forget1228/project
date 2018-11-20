@@ -1,5 +1,8 @@
 package com.xiaoji.util;
 
+import com.alibaba.fastjson.JSONObject;
+import com.xiaoji.model.SheetData;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -7,6 +10,26 @@ import java.util.List;
 import java.util.Map;
 
 public class CommonUtil {
+
+    public static SheetData getData(SheetData sheetData, JSONObject data) {
+        for (Object s : data.entrySet()){
+            if (s.toString().contains("[")) {
+                //接着进行取list值
+                String key = (String) ((Map.Entry)s).getKey();
+                List lisMap = new ArrayList();
+                lisMap = (List) data.get(key);
+                List list = new ArrayList();
+                for (int i= 0 ;i<lisMap.size();i++){
+                    list.add(lisMap.get(i));
+                }
+                sheetData.addDatas(list);
+            }else {
+                sheetData.put(((Map.Entry)s).getKey().toString(),((Map.Entry) s).getValue());
+            }
+            System.out.println(((Map.Entry)s).getKey()+" ====== "+((Map.Entry)s).getValue());
+        }
+        return sheetData;
+    }
 
     /**
      *

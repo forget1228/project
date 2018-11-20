@@ -48,7 +48,7 @@ public class ExcelUtil {
                 .append(File.separator).append("main")
                 .append(File.separator).append("webapp")
                 .append(File.separator).append("WEB-INF")
-                .append(File.separator).append("excel")
+                .append(File.separator).append("template")
                 .append(File.separator).append(name);//获取文件路径
         return fileName.toString();
     }
