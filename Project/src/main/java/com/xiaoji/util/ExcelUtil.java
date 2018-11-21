@@ -36,7 +36,7 @@ public class ExcelUtil {
                 .append(File.separator).append("main")
                 .append(File.separator).append("webapp")
                 .append(File.separator).append("WEB-INF")
-                .append(File.separator).append("export")
+                .append(File.separator).append("cache")
                 .append(File.separator).append(name);//获取文件路径
         return fileName.toString();
     }

@@ -3,9 +3,11 @@ package com.xiaoji.service;
 import java.util.Map;
 
 public interface ProjectService {
-    void insert(Map map);
+    Map abkRecording(Map map);
 
-    void update(Map map);
+    Map findAbkRecording(String id);
 
-    Map findById(String id);
+    Map abkUCache(Map map);
+
+    Map findAbkUCache(Map map);
 }

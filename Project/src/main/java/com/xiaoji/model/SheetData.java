@@ -58,4 +58,12 @@ public class SheetData  {
         map.clear();
         data.clear();
     }
+
+    @Override
+    public String toString() {
+        return "SheetData{" +
+                "map=" + map +
+                ", data=" + data +
+                '}';
+    }
 }

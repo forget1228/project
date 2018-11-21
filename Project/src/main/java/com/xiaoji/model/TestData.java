@@ -1,37 +1,47 @@
 package com.xiaoji.model;
 
 public class TestData {
-    private int projectName ;
-    private String demandName ;
-    private String sumNumbers ;
+    private String groupSubdomain ;
+    private String groupSAPrefix ;
+    private String templateId ;
+    private String data ;
 
-    public TestData(int projectName, String demandName, String sumNumbers) {
-        this.projectName = projectName;
-        this.demandName = demandName;
-        this.sumNumbers = sumNumbers;
+    public TestData(String groupSubdomain, String groupSAPrefix, String templateId, String data) {
+        this.groupSubdomain = groupSubdomain;
+        this.groupSAPrefix = groupSAPrefix;
+        this.templateId = templateId;
+        this.data = data;
     }
 
-    public int getProjectName() {
-        return projectName;
+    public String getGroupSubdomain() {
+        return groupSubdomain;
     }
 
-    public void setProjectName(int projectName) {
-        this.projectName = projectName;
+    public void setGroupSubdomain(String groupSubdomain) {
+        this.groupSubdomain = groupSubdomain;
     }
 
-    public String getDemandName() {
-        return demandName;
+    public String getGroupSAPrefix() {
+        return groupSAPrefix;
     }
 
-    public void setDemandName(String demandName) {
-        this.demandName = demandName;
+    public void setGroupSAPrefix(String groupSAPrefix) {
+        this.groupSAPrefix = groupSAPrefix;
     }
 
-    public String getSumNumbers() {
-        return sumNumbers;
+    public String getTemplateId() {
+        return templateId;
     }
 
-    public void setSumNumbers(String sumNumbers) {
-        this.sumNumbers = sumNumbers;
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

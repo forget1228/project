@@ -69,7 +69,7 @@ public class ProjectController {
         try {
             File dest = CommonUtil.getFile(ExcelUtil.getExcelFileName(file.getOriginalFilename()));
             file.transferTo(dest); //保存文件
-            projectService.insert(map);
+            projectService.abkRecording(map);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultResponse.makeErrRsp("初始化失败");

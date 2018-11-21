@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiaoji.model.SheetData;
 import com.xiaoji.model.TestData;
 import com.xiaoji.util.CacheBF;
+import com.xiaoji.util.CommonUtil;
 import com.xiaoji.util.ExcelUtil;
 import com.xiaoji.util.ResultResponse;
 import org.slf4j.Logger;
@@ -20,16 +21,21 @@ import java.util.Map;
 public class ExportExcelDemo {
 
     public static void main(String[] args) throws Exception {
-        test();
+        cache();
     }
 
 
 
 
-    public void cache(){
-        Data data= new Data();
+    public static void cache(){
+        /*Data data= new Data();
         data.setInfo("hello");
-        data.setName("world");
+        data.setName("world");*/
+
+        JSONObject data = JSONObject.parseObject(str());
+        SheetData sheetData = new SheetData();
+        //sheetData = CommonUtil.getData(sheetData,data);
+
         try {
             CacheBF.cache("123",data,100);
 
@@ -102,22 +108,7 @@ public class ExportExcelDemo {
         //sds[0] = sd;
         SheetData sheetData = new SheetData();
         JSONObject data = JSONObject.parseObject(str());
-        for (Object s : data.entrySet()){
-            if (s.toString().contains("[")) {
-                //接着进行取list值
-                String key = (String) ((Map.Entry)s).getKey();
-                List lisMap = new ArrayList();
-                lisMap = (List) data.get(key);
-                List list = new ArrayList();
-                for (int i= 0 ;i<lisMap.size();i++){
-                    list.add(lisMap.get(i));
-                }
-                sheetData.addDatas(list);
-            }else {
-                sheetData.put(((Map.Entry)s).getKey().toString(),((Map.Entry) s).getValue());
-            }
-            System.out.println(((Map.Entry)s).getKey()+" ====== "+((Map.Entry)s).getValue());
-        }
+        sheetData = CommonUtil.getData(sheetData,data);
         logger.info(ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sheetData));
     }
 

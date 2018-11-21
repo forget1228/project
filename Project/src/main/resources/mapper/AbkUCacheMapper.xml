@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoji.dao.AbkUCacheMapper">
+
+    <select id="find" resultType="map">
+        SELECT
+            *
+        FROM
+            abk_u_cache
+        WHERE
+            template_id = #{template_id}
+        AND sa_prefix = #{sa_prefix}
+        AND group_name = #{group_name}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO abk_u_cache
+            (
+                instance_url,
+                instance_status,
+                sa_prefix,
+                template_id,
+                group_name,
+                file_name,
+                create_date
+            )
+        VALUE
+            (
+                #{instance_url},
+                #{instance_status},
+                #{sa_prefix},
+                #{template_id},
+                #{group_name},
+                #{file_name},
+                DATE_FORMAT(NOW(), '%Y-%m-%d %T')
+            )
+    </insert>
+
+    <update id="update">
+        UPDATE abk_u_cache SET
+        instance_url = #{instance_url},
+        instance_status = #{instance_status},
+        file_name = #{file_name},
+        update_date = DATE_FORMAT(NOW(), '%Y-%m-%d %T')
+        WHERE
+            template_id = #{template_id}
+        AND sa_prefix = #{sa_prefix}
+        AND group_name = #{group_name}
+    </update>
+</mapper>
