@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -43,6 +44,8 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     public Map findAbkRecording(String id) { return abkRecordingMapper.findById(id); }
 
+    @Override
+    public List<Map<String,Object>> findAll() { return abkRecordingMapper.findAll(); }
 
 
 

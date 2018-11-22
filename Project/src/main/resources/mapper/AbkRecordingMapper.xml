@@ -5,6 +5,10 @@
         SELECT * FROM abk_recording WHERE template_id = #{id}
     </select>
 
+    <select id="findAll" resultType="map">
+        SELECT * FROM abk_recording
+    </select>
+
     <insert id="insert">
         INSERT INTO abk_recording
             (

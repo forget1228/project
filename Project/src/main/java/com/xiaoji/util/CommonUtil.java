@@ -47,8 +47,7 @@ public class CommonUtil {
             if (s.toString().contains("[")) {
                 //接着进行取list值
                 String key = (String) ((Map.Entry)s).getKey();
-                List lisMap = new ArrayList();
-                lisMap = (List) data.get(key);
+                List lisMap = (List) data.get(key);
                 List list = new ArrayList();
                 for (int i= 0 ;i<lisMap.size();i++){
                     list.add(lisMap.get(i));
@@ -63,7 +62,27 @@ public class CommonUtil {
     }
 
     /**
-     *
+     * 检查模板文件是否存在
+     * @param path
+     * @return
+     */
+    public static boolean fileExists(String path){
+        // 检测文件是否存在
+        File file = new File(path);
+        // 判断父目录是否存在，不存在则创建
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        // 检测目标路径文件是否存在，不存在则创建
+        if (!file.exists()){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    /**
+     * 判断是否有该文件存在，没有文件创建，有文件时删除再创建
      * @param path
      * @return
      * @throws Exception
@@ -74,7 +93,7 @@ public class CommonUtil {
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdir();
         }
-        //判断当前文件是否存在
+        // 判断当前文件是否存在
         if (!file.exists()){
             file.createNewFile();
         }else {
@@ -116,7 +135,6 @@ public class CommonUtil {
      * @return
      */
     public static boolean isNumber(Object v) {
-
         if (v == null) return false;
         if (v instanceof Number) {
             return true;

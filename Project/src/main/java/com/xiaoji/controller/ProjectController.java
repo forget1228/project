@@ -84,6 +84,17 @@ public class ProjectController {
         return ResultResponse.makeOKRsp();
     }
 
+    @RequestMapping(value = "/find",method = RequestMethod.POST)
+    @ResponseBody
+    public MessageResult find(HttpServletRequest request) {
+        try {
+            return ResultResponse.makeOKRsp(projectService.findAll());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultResponse.makeErrRsp("查询失败");
+        }
+    }
+
     @RequestMapping(value = "/test",method = RequestMethod.GET)
     @ResponseBody
     public void test(HttpServletRequest request,HttpServletResponse response) {

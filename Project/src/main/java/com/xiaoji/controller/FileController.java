@@ -97,24 +97,19 @@ public class FileController {
         // 接收参数
         String groupSubdomain = request.getParameter("groupSubdomain");
         String groupSAPrefix = request.getParameter("groupSAPrefix");
-        String templateId = request.getParameter("templateId");
         String instanceId = request.getParameter("instanceId");
 
         // 入参检查 入参必须项检查
         if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
         if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
-        if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
         if (instanceId == null || "".equals(instanceId))    return ResultResponse.makeErrRsp("必须注明");
         // 入参类型检查
         // 入参长度检查
         // 入参关联检查
 
         try {
-            Map out = new HashMap();
-            out.put("instance_id","1");
-            out.put("instance_url","2");
-            out.put("instanceStatus","3");
-            return ResultResponse.makeOKRsp(out);
+
+            return ResultResponse.makeOKRsp();
         }catch (Exception e){
             e.printStackTrace();
             return ResultResponse.makeErrRsp("findCache----查询缓存失败");

@@ -53,32 +53,20 @@ public class ExcelUtil {
         return fileName.toString();
     }
 
-    public static String fileExists(String importFilePath,String exportFilePath){
-        // 检测模板文件是否存在
-        File mbFile = new File(importFilePath);
-        if(!mbFile.exists()){
-            //logger.error("模板文件不存在,请确认其位置");
-            return "模板文件不存在,请确认其位置";
-        }
-        // 检测目标路径是否存在，不存在则创建
-        File reFile = new File(exportFilePath);
-        if(!reFile.exists() && !reFile.isDirectory()){
-            reFile.getParentFile().mkdir();
-            //logger.info("创建导出文件目录");
-        }
-        return "success";
-    }
-
     public static void excel(String filePath, String[] rowName, SheetData... sheetData) throws Exception{
-        boolean isExcel2003 = filePath.toLowerCase().endsWith("xls")?true:false;
-        if(isExcel2003){
-            // HSSFWorkbook只能操作excel2003
-            workbook = new HSSFWorkbook(new FileInputStream(new File(filePath)));
-        }else{
-            // XSSFWorkbook只能操作excel2007以上版本
-            workbook = new XSSFWorkbook(new FileInputStream(new File(filePath)));
+        if (CommonUtil.fileExists(filePath)) {
+            boolean isExcel2003 = filePath.toLowerCase().endsWith("xls")?true:false;
+            if (isExcel2003) {
+                // HSSFWorkbook只能操作excel2003
+                workbook = new HSSFWorkbook(new FileInputStream(new File(filePath)));
+            } else {
+                // XSSFWorkbook只能操作excel2007以上版本
+                workbook = new XSSFWorkbook(new FileInputStream(new File(filePath)));
+            }
+            createExcel(workbook, rowName, sheetData);
+        }else {
+            throw new RuntimeException("模板文件不存在");
         }
-        createExcel(workbook,rowName,sheetData);
     }
 
     public static void createExcel(Workbook workbook, String[] rowName, SheetData... sheetData) throws Exception {
@@ -228,7 +216,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 输出EXCEL文件
+     * 输出 EXCEL 文件
      * @param fileName 文件名
      * @param response
      */
@@ -248,7 +236,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 保存 Excel 文件
+     * 保存 EXCEL 文件
      * @param exportFilePath 保存路径
      */
     public static void outputFile(String exportFilePath) {
