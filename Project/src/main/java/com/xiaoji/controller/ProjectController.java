@@ -3,10 +3,16 @@ package com.xiaoji.controller;
 import com.xiaoji.configuration.config.YmlConfig;
 import com.xiaoji.model.SheetData;
 import com.xiaoji.service.ProjectService;
-import com.xiaoji.util.CommonUtil;
-import com.xiaoji.util.ExcelUtil;
-import com.xiaoji.util.MessageResult;
-import com.xiaoji.util.ResultResponse;
+import com.xiaoji.util.*;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,5 +82,31 @@ public class ProjectController {
             return ResultResponse.makeErrRsp("初始化失败");
         }
         return ResultResponse.makeOKRsp();
+    }
+
+    @RequestMapping(value = "/test",method = RequestMethod.GET)
+    @ResponseBody
+    public void test(HttpServletRequest request,HttpServletResponse response) {
+        try {
+            SheetData[] sds = new SheetData[2];
+            SheetData sd = new SheetData();
+            sd.put("title","12345678中国");
+            for (int i=0;i < 50;i++) {
+                Map map = new HashMap();
+                map.put("projectName","Id"+i);
+                map.put("demandName","姓名"+i);
+                map.put("sumNumbers","年龄"+i);
+                sd.addData(map);
+            }
+            sds[0] = sd;
+            String strFields1="projectName,demandName,sumNumbers";
+            String[] rowName = strFields1.split(",");
+            String filePath = "F://Git/project/Project/src/main/webapp/WEB-INF/template/download.xlsx";
+            ExcelUtil.excel(filePath,rowName,sds);
+            ExcelUtil.outputExcel("test.xlsx",response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

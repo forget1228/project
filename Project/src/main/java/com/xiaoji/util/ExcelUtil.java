@@ -1,18 +1,23 @@
 package com.xiaoji.util;
 
 import com.xiaoji.model.SheetData;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -22,12 +27,7 @@ import java.util.Map;
 
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
-    private static HSSFWorkbook hsWb = null;
-    private static HSSFSheet hsSheet = null;
-    private static XSSFWorkbook xsWb = null;
-    private static XSSFSheet xsSheet = null;
-    private static InputStream inputStream = null;
-    private static FileOutputStream fileOutputStream = null;
+    private static Workbook workbook = null;//工作薄
 
     public static String exportExcelFileName(String name){
         StringBuffer fileName=new StringBuffer(System.getProperty("user.dir"))
@@ -53,161 +53,6 @@ public class ExcelUtil {
         return fileName.toString();
     }
 
-    /**
-     * Excel (2007 xlsx 后缀 导出)
-     * @param in
-     * @param exportFilePath
-     * @param sheetData
-     * @throws IOException
-     * @return void 返回类型
-     */
-    public static void createTableXLSX(InputStream in,String exportFilePath,String[] rowName,SheetData... sheetData) throws IOException{
-        int rowIndex = 0;
-        try {
-            // 读取excel模板
-            xsWb = new XSSFWorkbook(in);
-            // 读取了模板内 sheet(0) 内容
-            xsSheet = xsWb.getSheetAt(0);
-            if (xsSheet.getLastRowNum() == 0  &&  xsSheet.getPhysicalNumberOfRows() == 0) {
-                logger.info("空模板");
-            }
-            // 从第 row 行开始写数据
-            rowIndex = xsSheet.getLastRowNum()+1;
-            //String sheetName = xsSheet.getSheetName();
-            logger.info("rowIndex: " + rowIndex);
-            SheetData sd = sheetData[0];
-            for(Object obj: sd.getDatas()){
-                Row row = xsSheet.createRow(rowIndex);// 设置行
-                //logger.info("obj: " + obj);
-                Class<?> classType = obj.getClass();
-                if (obj instanceof Map) {
-                    Map map = (Map) obj;
-                    for(int j=0;j< rowName.length;j++){
-                        Cell cell = null;
-                        cell = row.createCell(j);// 创建单元格
-                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
-                        cell.setCellValue(new XSSFRichTextString(map.get(rowName[j])==null?"":map.get(rowName[j]).toString()));
-                    }
-                }else{
-                    for(int j = 0;j< rowName.length;j++) {
-                        String firstLetter = rowName[j].substring(0, 1).toUpperCase();// 将属性首字母转换成大写
-                        String getMethodName = "get" + firstLetter + rowName[j].substring(1);
-                        Method getMethod = classType.getMethod(getMethodName, new Class[]{});
-                        Object value = getMethod.invoke(obj, new Object[]{}); // 获得对象的属性
-                        Cell cell = null;
-                        cell = row.createCell(j);// 创建单元格
-                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
-                        cell.setCellValue(new XSSFRichTextString(value==null?"":value.toString()));
-                    }
-                }
-                rowIndex = rowIndex+1;
-            }
-            // 修改模板内容导出新模板
-            fileOutputStream = new FileOutputStream(exportFilePath);
-            xsWb.write(fileOutputStream);
-        }catch (Exception e) {
-            logger.error("文件读写错误!");
-        }finally {
-            fileOutputStream.close();
-        }
-    }
-
-    /**
-     * Excel (2003 xls 后缀 导出)
-     * @param in
-     * @param exportFilePath
-     * @param sheetData
-     * @throws IOException
-     * @return void 返回类型
-     */
-    public static void createTableXLS(InputStream in,String exportFilePath,String[] rowName,SheetData... sheetData) throws IOException{
-        int rowIndex = 0;
-        try {
-            // 读取excel模板
-            hsWb = new HSSFWorkbook(in);
-            // 读取了模板内 sheet(0) 内容
-            hsSheet = hsWb.getSheetAt(0);
-            if (hsSheet.getLastRowNum() == 0  &&  hsSheet.getPhysicalNumberOfRows() == 0) {
-                logger.info("空模板");
-            }
-            // 从第 row 行开始写数据
-            rowIndex = hsSheet.getLastRowNum()+1;
-            logger.info("rowIndex: " + rowIndex);
-            SheetData sd = sheetData[0];
-            for(Object obj: sd.getDatas()){
-                Row row = hsSheet.createRow(rowIndex);// 设置行
-                //logger.info("obj: " + obj);
-                Class<?> classType = obj.getClass();
-                if (obj instanceof Map) {
-                    Map map = (Map) obj;
-                    for(int j=0;j< rowName.length;j++){
-                        Cell cell = null;
-                        cell = row.createCell(j);// 创建单元格
-                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
-                        cell.setCellValue(new XSSFRichTextString(map.get(rowName[j])==null?"":map.get(rowName[j]).toString()));
-                    }
-                }else{
-                    for(int j = 0;j< rowName.length;j++) {
-                        String firstLetter = rowName[j].substring(0, 1).toUpperCase();// 将属性首字母转换成大写
-                        String getMethodName = "get" + firstLetter + rowName[j].substring(1);
-                        Method getMethod = classType.getMethod(getMethodName, new Class[]{});
-                        Object value = getMethod.invoke(obj, new Object[]{}); // 获得对象的属性
-                        Cell cell = null;
-                        cell = row.createCell(j);// 创建单元格
-                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
-                        cell.setCellValue(new XSSFRichTextString(value==null?"":value.toString()));
-                    }
-                }
-                rowIndex = rowIndex+1;
-            }
-            // 修改模板内容导出新模板
-            fileOutputStream = new FileOutputStream(exportFilePath);
-            hsWb.write(fileOutputStream);
-        }catch (Exception e) {
-            logger.error("文件读写错误!");
-        }finally {
-            fileOutputStream.close();
-        }
-    }
-
-    /**
-     * Excel 格式检验
-     * @param importFilePath    模板
-     * @param exportFilePath    导出
-     * @param rowName           行列名  可为null
-     * @param sheetData         数据
-     * @return String
-     */
-    public static synchronized String exportExcel(String importFilePath,String exportFilePath,String[] rowName,SheetData... sheetData){
-        String str = "fail";
-        if ("success".equals(fileExists(importFilePath,exportFilePath))) {
-            try {
-                inputStream = new FileInputStream(importFilePath);
-                if (rowName != null && !"".equals(rowName)){
-                    if (importFilePath.endsWith(".xlsx")){
-                        createTableXLSX(inputStream, exportFilePath,rowName,sheetData);
-                    }
-                    else if (importFilePath.endsWith(".xls")){
-                        createTableXLS(inputStream, exportFilePath,rowName, sheetData);
-                    }else
-                        str = "不支持的文件类型";
-                }else {
-                    if (importFilePath.endsWith(".xlsx"))
-                        createXLSX(inputStream, exportFilePath, sheetData);
-                    else if (importFilePath.endsWith(".xls"))
-                        createXLS(inputStream, exportFilePath, sheetData);
-                    else
-                        str = "不支持的文件类型";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return str;
-            }
-            str = "success";
-        }
-        return str;
-    }
-
     public static String fileExists(String importFilePath,String exportFilePath){
         // 检测模板文件是否存在
         File mbFile = new File(importFilePath);
@@ -224,73 +69,74 @@ public class ExcelUtil {
         return "success";
     }
 
-    /**
-     * Excel (2003 xls后缀 导出)
-     * @return void 返回类型
-     */
-    public static void createXLS(InputStream in,String exportFilePath,SheetData... sheetData) throws IOException{
-        try {
-            // 读取excel模板
-            hsWb = new HSSFWorkbook(in);
-            for (int i = 0; i < hsWb.getNumberOfSheets(); i++) {
-                // 读取了模板内所有 sheet 内容
-                hsSheet = hsWb.getSheetAt(i);
-                if (hsSheet.getLastRowNum() == 0  &&  hsSheet.getPhysicalNumberOfRows() == 0) {
-                    continue;
-                }
-
-                // 如果这行没有了，整个公式都不会有自动计算的效果的
-                hsSheet.setForceFormulaRecalculation(true);
-                // 写数据
-                if ("".equals(sheetData[i]) || sheetData[i] == null){
-                    continue;
-                }else {
-                    ExcelUtil.writeData(sheetData[i], xsWb.getSheetAt(i));
-                }
-            }
-            // 修改模板内容导出新模板
-            fileOutputStream = new FileOutputStream(exportFilePath);
-            hsWb.write(fileOutputStream);
-        }catch (Exception e) {
-            logger.error("文件读写错误!");
-        }finally {
-            fileOutputStream.close();
+    public static void excel(String filePath, String[] rowName, SheetData... sheetData) throws Exception{
+        boolean isExcel2003 = filePath.toLowerCase().endsWith("xls")?true:false;
+        if(isExcel2003){
+            // HSSFWorkbook只能操作excel2003
+            workbook = new HSSFWorkbook(new FileInputStream(new File(filePath)));
+        }else{
+            // XSSFWorkbook只能操作excel2007以上版本
+            workbook = new XSSFWorkbook(new FileInputStream(new File(filePath)));
         }
+        createExcel(workbook,rowName,sheetData);
     }
-    /**
-     * Excel (2007 xlsx 后缀 导出)
-     * @param in
-     * @param exportFilePath
-     * @param sheetData
-     * @throws IOException
-     * @return void 返回类型
-     */
-    public static void createXLSX(InputStream in,String exportFilePath,SheetData... sheetData) throws IOException{
-        try {
-            // 读取excel模板
-            xsWb = new XSSFWorkbook(in);
-            for (int i = 0; i < xsWb.getNumberOfSheets(); i++) {
+
+    public static void createExcel(Workbook workbook, String[] rowName, SheetData... sheetData) throws Exception {
+        Sheet sheet = null;
+        if (rowName !=  null) {
+            sheet = workbook.getSheetAt(0);
+            int rowIndex = 0;
+            if (sheet.getLastRowNum() == 0 && sheet.getPhysicalNumberOfRows() == 0) {
+                logger.info("空模板");
+            }
+            // 从第 row 行开始写数据
+            rowIndex = sheet.getLastRowNum() + 1;
+            //String sheetName = xsSheet.getSheetName();
+            logger.info("rowIndex: " + rowIndex);
+            SheetData sd = sheetData[0];
+            for (Object obj : sd.getDatas()) {
+                Row row = sheet.createRow(rowIndex);// 设置行
+                //logger.info("obj: " + obj);
+                Class<?> classType = obj.getClass();
+                if (obj instanceof Map) {
+                    Map map = (Map) obj;
+                    for (int j = 0; j < rowName.length; j++) {
+                        Cell cell = null;
+                        cell = row.createCell(j);// 创建单元格
+                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
+                        cell.setCellValue(new XSSFRichTextString(map.get(rowName[j]) == null ? "" : map.get(rowName[j]).toString()));
+                    }
+                } else {
+                    for (int j = 0; j < rowName.length; j++) {
+                        String firstLetter = rowName[j].substring(0, 1).toUpperCase();// 将属性首字母转换成大写
+                        String getMethodName = "get" + firstLetter + rowName[j].substring(1);
+                        Method getMethod = classType.getMethod(getMethodName, new Class[]{});
+                        Object value = getMethod.invoke(obj, new Object[]{}); // 获得对象的属性
+                        Cell cell = null;
+                        cell = row.createCell(j);// 创建单元格
+                        cell.setCellType(HSSFCell.ENCODING_UTF_16);// 中文处理
+                        cell.setCellValue(new XSSFRichTextString(value == null ? "" : value.toString()));
+                    }
+                }
+                rowIndex = rowIndex + 1;
+            }
+        }else{
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 // 读取了模板内所有 sheet 内容
-                xsSheet = xsWb.getSheetAt(i);
-                if (xsSheet.getLastRowNum() == 0  &&  xsSheet.getPhysicalNumberOfRows() == 0) {
+                sheet = workbook.getSheetAt(i);
+                if (sheet.getLastRowNum() == 0  &&  sheet.getPhysicalNumberOfRows() == 0) {
+                    logger.info("空模板");
                     continue;
                 }
                 // 如果这行没有了，整个公式都不会有自动计算的效果的
-                xsSheet.setForceFormulaRecalculation(true);
+                sheet.setForceFormulaRecalculation(true);
                 // 写数据
-                if (sheetData[i] == null || "".equals(sheetData[i])){
-                    continue;
+                if (sheetData.length > i){
+                    ExcelUtil.writeData(sheetData[i], workbook.getSheetAt(i));
                 }else {
-                    ExcelUtil.writeData(sheetData[i], xsWb.getSheetAt(i));
+                    continue;
                 }
             }
-            // 修改模板内容导出新模板
-            fileOutputStream = new FileOutputStream(exportFilePath);
-            xsWb.write(fileOutputStream);
-        }catch (Exception e) {
-            logger.error("文件读写错误!");
-        }finally {
-            fileOutputStream.close();
         }
     }
 
@@ -381,4 +227,43 @@ public class ExcelUtil {
         }
     }
 
+    /**
+     * 输出EXCEL文件
+     * @param fileName 文件名
+     * @param response
+     */
+    public static void outputExcel(String fileName, HttpServletResponse response) {
+        //String FileName =  fileName+ new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());//不重复文件名
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            fileName = new String(fileName.getBytes(),"ISO8859-1");
+            response.setHeader("Content-disposition","attachment; filename=" + fileName);
+            ServletOutputStream os=response.getOutputStream();
+            workbook.write(os);
+            os.flush();
+            os.close(); //关闭
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 保存 Excel 文件
+     * @param exportFilePath 保存路径
+     */
+    public static void outputFile(String exportFilePath) {
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(exportFilePath);
+            workbook.write(fileOutputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

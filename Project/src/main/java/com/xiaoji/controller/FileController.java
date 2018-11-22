@@ -1,28 +1,27 @@
 package com.xiaoji.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xiaoji.configuration.config.YmlConfig;
 import com.xiaoji.model.SheetData;
-import com.xiaoji.model.TestData;
 import com.xiaoji.service.ProjectService;
-import com.xiaoji.util.*;
+import com.xiaoji.util.CommonUtil;
+import com.xiaoji.util.ExcelUtil;
+import com.xiaoji.util.MessageResult;
+import com.xiaoji.util.ResultResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @CrossOrigin
@@ -33,33 +32,36 @@ public class FileController {
 
     Logger logger = LoggerFactory.getLogger(FileController.class);
 
-    @RequestMapping("/download")
+    @RequestMapping(value = "/download",method = RequestMethod.GET)
     @ResponseBody
-    public MessageResult download(HttpServletRequest request) {
+    public void download(HttpServletRequest request,HttpServletResponse response) {
         // 接收参数
         String groupSubdomain = request.getParameter("groupSubdomain");
         String groupSAPrefix = request.getParameter("groupSAPrefix");
         String templateId = request.getParameter("templateId");
         String data = request.getParameter("data");
-
         // 入参检查 入参必须项检查
-        if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
-        if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
-        if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
-        if (data == null || "".equals(data))    return ResultResponse.makeErrRsp("必须注明");
         // 入参类型检查
         // 入参长度检查
         // 入参关联检查
-
+        SheetData sheetData = new SheetData();
+        sheetData = CommonUtil.getData(sheetData, JSONObject.parseObject(data));
         try {
+            Map map = projectService.findAbkRecording(templateId);
+            if (map == null){
+            }
+            String fileName = map.get("template_file").toString();
+            String importFilePath = ExcelUtil.getExcelFileName(fileName);
+            String exportFilePath = ExcelUtil.exportExcelFileName(fileName);
+
+            ExcelUtil.excel(importFilePath,null,sheetData);
+            ExcelUtil.outputExcel(exportFilePath,response);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultResponse.makeErrRsp("download----失败");
         }
-        return ResultResponse.makeOKRsp();
     }
 
-    @RequestMapping("/downloadCache")
+    @RequestMapping(value = "/downloadCache",method = RequestMethod.POST)
     @ResponseBody
     public MessageResult downloadCache(HttpServletRequest request) {
         // 接收参数
@@ -89,7 +91,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping("/downloadMany")
+    @RequestMapping(value = "/downloadMany",method = RequestMethod.POST)
     @ResponseBody
     public MessageResult downloadMany(HttpServletRequest request) {
         // 接收参数
@@ -119,10 +121,9 @@ public class FileController {
         }
     }
 
-    @RequestMapping("/cache")
+    @RequestMapping(value = "/cache",method = RequestMethod.POST)
     @ResponseBody
-    public MessageResult cache(HttpServletRequest request,HttpServletResponse response) {
-        SheetData sheetData = new SheetData();
+    public MessageResult cache(HttpServletRequest request) {
         // 接收参数
         String groupSubdomain = request.getParameter("groupSubdomain");
         String groupSAPrefix = request.getParameter("groupSAPrefix");
@@ -135,6 +136,7 @@ public class FileController {
         if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
         if (data == null || "".equals(data))    return ResultResponse.makeErrRsp("必须注明");
 
+        SheetData sheetData = new SheetData();
         sheetData = CommonUtil.getData(sheetData, JSONObject.parseObject(data));
 
         // 入参类型检查
@@ -153,9 +155,9 @@ public class FileController {
             fileName = time +"_"+fileName;
             String exportFilePath = ExcelUtil.exportExcelFileName(fileName);
 
-            if (!"success".equals(ExcelUtil.exportExcel(importFilePath,exportFilePath,null,sheetData))){
-                return ResultResponse.makeErrRsp("cache----模板数据写入失败");
-            }
+            ExcelUtil.excel(importFilePath,null,sheetData);
+            ExcelUtil.outputFile(exportFilePath);
+
             Map param = new HashMap();
             param.put("group_name",groupSubdomain);
             param.put("sa_prefix",groupSAPrefix);
@@ -166,18 +168,14 @@ public class FileController {
 
             Map result = projectService.abkUCache(param);
             Map out = new HashMap();
-            String instance_id = "";
-            String instance_url = "";
             if (result == null){
                 Map cacheMap = projectService.findAbkUCache(param);
-                instance_url = cacheMap.get("instance_url").toString();
-                instance_id = cacheMap.get("instance_id").toString();
+                out.put("instance_id",cacheMap.get("instance_url").toString());
+                out.put("instance_url",cacheMap.get("instance_id").toString());
             }else {
-                instance_url = result.get("instance_url").toString();
-                instance_id = result.get("instance_id").toString();
+                out.put("instance_id",result.get("instance_url").toString());
+                out.put("instance_url",result.get("instance_id").toString());
             }
-            out.put("instance_id",instance_id);
-            out.put("instance_url",instance_url);
             return ResultResponse.makeOKRsp(out);
         }catch (Exception e){
             e.printStackTrace();
@@ -185,7 +183,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping("/findCache")
+    @RequestMapping(value = "/findCache",method = RequestMethod.POST)
     @ResponseBody
     public MessageResult findCache(HttpServletRequest request) {
         // 接收参数
@@ -210,7 +208,7 @@ public class FileController {
             param.put("template_id",templateId);
             Map map = projectService.findAbkUCache(param);
             if (map == null){
-                return ResultResponse.makeErrRsp("findCache----目标模板不存在");
+                return ResultResponse.makeErrRsp("findCache----模板缓存不存在");
             }
             Map out = new HashMap();
             out.put("instance_id",map.get("instance_id"));
@@ -224,31 +222,8 @@ public class FileController {
 
     @RequestMapping("/findCacheStatus")
     @ResponseBody
-    public MessageResult findCacheStatus(HttpServletRequest request) {
-        // 接收参数
-        String groupSubdomain = request.getParameter("groupSubdomain");
-        String groupSAPrefix = request.getParameter("groupSAPrefix");
-        String templateId = request.getParameter("templateId");
-        String instanceId = request.getParameter("instanceId");
+    public void findCacheStatus(HttpServletRequest request) {
 
-        // 入参检查 入参必须项检查
-        if (groupSubdomain == null || "".equals(groupSubdomain))    return ResultResponse.makeErrRsp("必须注明");
-        if (groupSAPrefix == null || "".equals(groupSAPrefix))    return ResultResponse.makeErrRsp("必须注明");
-        if (templateId == null || "".equals(templateId))    return ResultResponse.makeErrRsp("必须注明");
-        if (instanceId == null || "".equals(instanceId))    return ResultResponse.makeErrRsp("必须注明");
-        // 入参类型检查
-        // 入参长度检查
-        // 入参关联检查
-
-        try {
-            Map out = new HashMap();
-            out.put("instance_id","1");
-            out.put("instance_url","2");
-            return ResultResponse.makeOKRsp(out);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultResponse.makeErrRsp("findCache----查询缓存失败");
-        }
     }
 
 }

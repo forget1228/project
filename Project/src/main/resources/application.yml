@@ -72,4 +72,4 @@ servlet:
     max-request-size: 30M #单个请求的文件总大小上限
 
 file:
-  path: E://file/result/
+  path: F://Git/project/Project/src/main/webapp/WEB-INF/template
