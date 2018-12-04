@@ -1,14 +1,14 @@
 package com.xiaoji.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoji.model.SheetData;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -53,7 +53,7 @@ public class ExcelUtil {
         return fileName.toString();
     }
 
-    public static void excel(String filePath, String[] rowName, SheetData... sheetData) throws Exception{
+    public static void excel(String filePath, SheetData... sheetData) throws Exception{
         if (CommonUtil.fileExists(filePath)) {
             boolean isExcel2003 = filePath.toLowerCase().endsWith("xls")?true:false;
             if (isExcel2003) {
@@ -63,26 +63,47 @@ public class ExcelUtil {
                 // XSSFWorkbook只能操作excel2007以上版本
                 workbook = new XSSFWorkbook(new FileInputStream(new File(filePath)));
             }
-            createExcel(workbook, rowName, sheetData);
+            createExcel(workbook, sheetData);
         }else {
             throw new RuntimeException("模板文件不存在");
         }
     }
 
-    public static void createExcel(Workbook workbook, String[] rowName, SheetData... sheetData) throws Exception {
+    public static void createExcel(Workbook workbook, SheetData... sheetData) throws Exception {
         Sheet sheet = null;
-        if (rowName !=  null) {
-            sheet = workbook.getSheetAt(0);
-            int rowIndex = 0;
-            if (sheet.getLastRowNum() == 0 && sheet.getPhysicalNumberOfRows() == 0) {
-                logger.info("空模板");
+        sheet = workbook.getSheetAt(0);
+        if (sheet.getLastRowNum() == 0  &&  sheet.getPhysicalNumberOfRows() == 0) {
+            logger.info("空模板");
+            throw new RuntimeException("空模板");
+        }
+        //就一个的话 直接用模板
+        int size = sheetData.length ;
+
+        // 如果这行没有了，整个公式都不会有自动计算的效果的
+        sheet.setForceFormulaRecalculation(true);
+        Sheet source =  workbook.getSheetAt(0); // 模板
+        for(int i = 0 ; i < size  ; i++) {
+            Sheet toSheet = workbook.createSheet(sheetData[i].getSheetName() == null ? sheet.getSheetName()+i:sheetData[i].getSheetName());
+            copySheet(workbook, source, toSheet);
+
+            // 写数据
+            if (sheetData[i].getRowName() == null) {
+                writeData(workbook.getSheetAt(i+1),sheetData[i]);
+            }else {
+                elseExcel(workbook.getSheetAt(i+1),sheetData[i].getRowName(),sheetData[i]);
             }
+        }
+        workbook.removeSheetAt(0);
+    }
+
+    private static void elseExcel(Sheet sheet,String[] rowName, SheetData sheetData)throws Exception{
+        try {
+            sheet.getRow(0).getCell(0).setCellValue(sheetData.get("demandName").toString());
+            int rowIndex = 0;
             // 从第 row 行开始写数据
-            rowIndex = sheet.getLastRowNum() + 1;
-            //String sheetName = xsSheet.getSheetName();
+            rowIndex = sheet.getLastRowNum();
             logger.info("rowIndex: " + rowIndex);
-            SheetData sd = sheetData[0];
-            for (Object obj : sd.getDatas()) {
+            for (Object obj : sheetData.getDatas()) {
                 Row row = sheet.createRow(rowIndex);// 设置行
                 //logger.info("obj: " + obj);
                 Class<?> classType = obj.getClass();
@@ -108,23 +129,109 @@ public class ExcelUtil {
                 }
                 rowIndex = rowIndex + 1;
             }
-        }else{
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                // 读取了模板内所有 sheet 内容
-                sheet = workbook.getSheetAt(i);
-                if (sheet.getLastRowNum() == 0  &&  sheet.getPhysicalNumberOfRows() == 0) {
-                    logger.info("空模板");
-                    continue;
+        }catch (Exception e){
+            throw new RuntimeException("数据读写失败");
+        }
+    }
+
+    /**
+     * Sheet复制
+     * @param fromSheet
+     * @param toSheet
+     */
+    private static void copySheet(Workbook wb,Sheet fromSheet, Sheet toSheet) {
+        // 合并区域处理
+        mergerRegion(fromSheet, toSheet);
+        int index = 0;
+        for (Iterator<Row> rowIt = fromSheet.rowIterator(); rowIt.hasNext();) {
+            Row tmpRow =  rowIt.next();
+            Row newRow = toSheet.createRow(tmpRow.getRowNum());
+
+            CellStyle style = tmpRow.getRowStyle();
+            if(style != null)
+                newRow.setRowStyle(tmpRow.getRowStyle());
+
+            newRow.setHeight(tmpRow.getHeight());
+
+            // 针对第一行设置行宽
+            if(index == 0) {
+                int first = tmpRow.getFirstCellNum();
+                int last = tmpRow.getLastCellNum();
+                for(int i = first ; i < last ; i++) {
+                    int w = fromSheet.getColumnWidth(i);
+                    toSheet.setColumnWidth(i, w + 1);
                 }
-                // 如果这行没有了，整个公式都不会有自动计算的效果的
-                sheet.setForceFormulaRecalculation(true);
-                // 写数据
-                if (sheetData.length > i){
-                    ExcelUtil.writeData(sheetData[i], workbook.getSheetAt(i));
-                }else {
-                    continue;
-                }
+                toSheet.setDefaultColumnWidth(fromSheet.getDefaultColumnWidth());
             }
+            // 行复制
+            copyRow(wb,tmpRow,newRow);
+
+            index++ ;
+        }
+    }
+
+    /**
+     * 复制原有sheet的合并单元格到新创建的sheet
+     * @param fromSheet  新创建sheet
+     * @param toSheet      原有的sheet
+     */
+    private static void mergerRegion(Sheet fromSheet, Sheet toSheet) {
+        int sheetMergerCount = fromSheet.getNumMergedRegions();
+        for (int i = 0; i < sheetMergerCount; i++) {
+            CellRangeAddress cra = fromSheet.getMergedRegion(i);
+            toSheet.addMergedRegion(cra);
+        }
+    }
+
+    /**
+     * 行复制功能
+     * @param fromRow
+     * @param toRow
+     */
+    private static void copyRow(Workbook wb,Row fromRow,Row toRow){
+        for (Iterator<Cell> cellIt = fromRow.cellIterator(); cellIt.hasNext();) {
+            Cell tmpCell = cellIt.next();
+            Cell newCell = toRow.createCell(tmpCell.getColumnIndex());
+            copyCell(wb,tmpCell, newCell);
+        }
+    }
+
+    /**
+     * 复制单元格
+     * @param srcCell
+     * @param distCell
+     */
+    private static void copyCell(Workbook wb,Cell srcCell, Cell distCell) {
+        CellStyle newstyle=wb.createCellStyle();
+        newstyle.cloneStyleFrom(srcCell.getCellStyle());
+        // 样式
+        distCell.setCellStyle(newstyle);
+        // 评论
+        if (srcCell.getCellComment() != null) {
+            distCell.setCellComment(srcCell.getCellComment());
+        }
+        // 不同数据类型处理
+        int cType = srcCell.getCellType();
+        distCell.setCellType(cType);
+        switch (cType) {
+            case HSSFCell.CELL_TYPE_STRING:
+                distCell.setCellValue(srcCell.getRichStringCellValue());
+                break;
+            case HSSFCell.CELL_TYPE_NUMERIC:
+                distCell.setCellValue(srcCell.getNumericCellValue());
+                break;
+            case HSSFCell.CELL_TYPE_FORMULA:
+                distCell.setCellFormula(srcCell.getCellFormula());
+                break;
+            case HSSFCell.CELL_TYPE_BOOLEAN:
+                distCell.setCellValue(srcCell.getBooleanCellValue());
+                break;
+            case HSSFCell.CELL_TYPE_ERROR:
+                distCell.setCellValue(srcCell.getErrorCellValue());
+                break;
+            default:
+                distCell.setCellValue(srcCell.getRichStringCellValue());
+                break;
         }
     }
 
@@ -133,7 +240,7 @@ public class ExcelUtil {
      * @param sheetData 数据Map
      * @param sheet sheet
      */
-    public static void writeData(SheetData sheetData,Sheet sheet) {
+    private static void writeData(Sheet sheet,SheetData sheetData) throws Exception{
         // 从 sheet 中找到匹配符 #{}表示单个 , ${} 表示集合,从该单元格开始向下追加
         for(Iterator<Row> rowIt = sheet.rowIterator(); rowIt.hasNext();) {
             Row row = rowIt.next();
@@ -157,7 +264,7 @@ public class ExcelUtil {
      * @param sheetData
      * @param keyWind #{name}只替换当前 or ${names} 从当前行开始向下替换
      */
-    public static void writeData(SheetData sheetData , String keyWind , Cell cell , Sheet sheet) {
+    private static void writeData(SheetData sheetData , String keyWind , Cell cell , Sheet sheet) {
         String key = keyWind.substring(2 , keyWind.length() - 1);
         if(keyWind.startsWith("#")) {
             //简单替换
@@ -229,7 +336,7 @@ public class ExcelUtil {
             ServletOutputStream os=response.getOutputStream();
             workbook.write(os);
             os.flush();
-            os.close(); //关闭
+            os.close(); // 关闭
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -8,7 +8,9 @@ public interface AbkRecordingMapper {
 
     void update(Map map);
 
-    Map findById(String id);
+    Map findByAbkId(String abk_id);
 
-    List<Map<String,Object>> findAll();
+    Map findByDocumentName(String documentName);
+
+    List<Map<String,Object>> findGroup(String group_name);
 }

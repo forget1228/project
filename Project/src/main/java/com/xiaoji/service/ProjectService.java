@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProjectService {
-    Map abkRecording(Map map);
+    void abkRecording(Map map);
 
-    Map findAbkRecording(String id);
+    Map findByAbkId(String abkId);
 
-    List<Map<String,Object>> findAll();
+    List<Map<String,Object>> findAll(String group_name);
 
     Map abkUCache(Map map);
 

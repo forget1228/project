@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>通用报表管理系统</title>
+    <link rel="shortcut icon" href="#" />
+    <link rel="stylesheet" href="webjars/bootstrap/4.1.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="webjars/jquery-ui/1.12.1/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="static/css/header.css"/>
+    <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script src="webjars/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="webjars/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="static/js/body.js"></script>
+    <script src="static/js/url-pattern.js"></script>
+
+</head>
+<body>
+<header
+        class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bd-navbar-header">
+    <a class="navbar-brand" href="">通用报表管理系统</a>
+</header>
+<!--<div class="panel panel-default" style="width: 60%;margin:0 auto;border:1px solid #000">
+    <div class="panel-heading"><h5>面板标题</h5></div>
+    <table class="table">
+        <th>产品</th><th>价格 </th>
+        <tr><td>产品 A</td><td>200</td></tr>
+        <tr><td>产品 B</td><td>400</td></tr>
+    </table>
+</div>-->
+
+<br/>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-3 column">
+            <h3>
+                GUI
+            </h3>
+            <div>
+                <button type="button" class="btn btn-default btn-primary">管理报表/文件模板</button>
+            </div>
+        </div>
+        <div class="col-md-5 column" id="template">
+
+
+        </div>
+        <div class="col-md-4 column">
+            <h3>
+                API
+            </h3>
+            <div>
+                <button type="button" class="btn btn-default btn-primary" style="float:left;">生成并下载</button>
+                &nbsp&nbsp&nbsp&nbsp<button type="button" class="btn btn-default btn-primary">生成并缓存</button>
+            </div>
+            <br/>
+            <div>
+                <button type="button" class="btn btn-default btn-primary" style="float:left;">查询缓存记录</button>
+                &nbsp&nbsp&nbsp&nbsp<button type="button" class="btn btn-default btn-primary">查询生成结果</button>
+            </div>
+            <br/>
+            <div>
+                <button type="button" class="btn btn-default btn-primary" style="float:left;">合并下载</button>
+                &nbsp&nbsp&nbsp&nbsp<button type="button" class="btn btn-default btn-primary">下载</button>
+            </div>
+            <br/>
+            <div>
+                <button type="button" class="btn btn-default btn-primary" data-toggle="modal" href="#initModal" >初始化模板</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- 模态框 -->
+<form id="uploadForm" enctype="multipart/form-data">
+    <!-- 模态弹出窗 -->
+    <div class="modal show"   id="uploadModal">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 100px;">
+                <div class="modal-header">
+                    <h4 class="modal-title">选择要上传的文件</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="child-align: right"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>文件：<input type="file" name="templateFile" /></p >
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="upload()">上传</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</form>
+
+<form id="initForm" enctype="multipart/form-data">
+    <!-- 模态弹出窗 -->
+    <div class="modal show"  id="initModal">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 100px;">
+                <div class="modal-header">
+                    <h4 class="modal-title">选择要上传的文件</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="child-align: right"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>短应用程序码：<input type="text" name="saPrefix" /> </p >
+                    <p>模板分类：<input type="text" name="templateClassName" /></p >
+                    <p>文件：<input type="file" name="templateFile" /></p >
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="init()">上传</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</form>
+
+</body>
+</html>

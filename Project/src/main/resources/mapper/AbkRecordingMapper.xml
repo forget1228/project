@@ -1,48 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiaoji.dao.AbkRecordingMapper">
-    <select id="findById" resultType="map">
-        SELECT * FROM abk_recording WHERE template_id = #{id}
+    <select id="findByDocumentName" resultType="map">
+        SELECT * FROM abk_recording WHERE document_name = #{document_name}
     </select>
 
-    <select id="findAll" resultType="map">
-        SELECT * FROM abk_recording
+    <select id="findGroup" resultType="map">
+        select * from abk_recording WHERE group_name = #{group_name} or group_name = 'www'
+    </select>
+
+    <select id="findByAbkId" resultType="map">
+        SELECT * FROM abk_recording WHERE abk_id = #{abk_id}
     </select>
 
     <insert id="insert">
         INSERT INTO abk_recording
             (
+                group_name,
+                is_public,
                 sa_prefix,
-                template_class_name,
                 template_id,
                 template_name,
-                template_generator,
-                template_file,
-                template_type,
+                template_class,
+                abl_id,
+                is_old,
+                document_name,
+                document_type,
                 create_date
             )
         VALUE
             (
+                #{group_name},
+                #{is_public},
                 #{sa_prefix},
-                #{template_class_name},
                 #{template_id},
                 #{template_name},
-                #{template_generator},
-                #{template_file},
-                #{template_type},
+                #{template_class},
+                #{abl_id},
+                #{is_old},
+                #{document_name},
+                #{document_type},
                 DATE_FORMAT(NOW(), '%Y-%m-%d %T')
             )
     </insert>
 
     <update id="update">
         UPDATE abk_recording SET
-        template_class_name = #{template_class_name},
+        sa_prefix = #{sa_prefix},
         template_id = #{template_id},
-        template_generator = #{template_generator},
-        template_file = #{template_file},
-        template_type = #{template_type},
+        template_name = #{template_name},
+        template_class = #{template_class},
+        abl_id = #{abl_id},
+        is_old = #{is_old},
+        document_name = #{document_name},
+        document_type = #{document_type},
         update_date = DATE_FORMAT(NOW(), '%Y-%m-%d %T')
-        WHERE template_name = #{template_name} AND sa_prefix = #{sa_prefix}
+        WHERE abk_id = #{abk_id}
     </update>
 
 

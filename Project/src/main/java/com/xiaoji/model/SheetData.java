@@ -19,13 +19,18 @@ public class SheetData  {
     private List<Object> data = new LinkedList<Object>();
 
     // sheet 表格名称
-    //private String name ;
-    /*public void setName(String name) {
-        this.name = name;
-    }
-    public String getName() {
-        return name;
-    }*/
+    private String sheetName ;
+
+    // sheet List<实体>对应列名 名称
+    private String[] rowName ;
+
+    public String[] getRowName() { return rowName; }
+
+    public void setRowName(String[] rowName) { this.rowName = rowName; }
+
+    public String getSheetName() { return sheetName; }
+
+    public void setSheetName(String sheetName) { this.sheetName = sheetName; }
 
     public void put(String key , Object value) {
         map.put(key, value);
@@ -49,7 +54,7 @@ public class SheetData  {
 
     public SheetData() {
         super();
-        //this.name = name;
+        this.sheetName = sheetName;
     }
     /**
      * 清理map存储和数据存储
@@ -64,6 +69,7 @@ public class SheetData  {
         return "SheetData{" +
                 "map=" + map +
                 ", data=" + data +
+                ", sheetName='" + sheetName + '\'' +
                 '}';
     }
 }

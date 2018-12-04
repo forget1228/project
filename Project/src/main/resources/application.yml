@@ -64,6 +64,11 @@ zuul:
     url: http://sa-abd:8080/abd/my
     path:
 
+#http://192.168.0.109:8081/abl/store/remote/upload
+#http://127.0.0.1:8081/abk/fileTest
+abl:
+  path: http://192.168.0.109:8081/abl/store/remote/upload
+
 #spring:
 servlet:
   multipart:

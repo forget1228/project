@@ -25,28 +25,27 @@ public class ProjectServiceImpl implements ProjectService{
     private AbkUCacheMapper abkUCacheMapper;
 
     @Override
-    public Map abkRecording(Map map) {
-        Map out = null;
+    public void abkRecording(Map map) {
         try {
-            Map result = abkUCacheMapper.find(map);
-            if (result == null){
+            Map result = abkRecordingMapper.findByDocumentName(map.get("document_name").toString());
+            if (result == null) {
                 abkRecordingMapper.insert(map);
             }else {
+                map.put("abk_id",result.get("abk_id"));
                 abkRecordingMapper.update(map);
-                out = result;
             }
-            return out;
         }catch (Exception e){
-            throw new RuntimeException("模板保存失败！",e);
+            throw new RuntimeException("初始化入库失败！",e);
         }
     }
 
     @Override
-    public Map findAbkRecording(String id) { return abkRecordingMapper.findById(id); }
+    public Map findByAbkId(String abkId) {
+        return abkRecordingMapper.findByAbkId(abkId);
+    }
 
     @Override
-    public List<Map<String,Object>> findAll() { return abkRecordingMapper.findAll(); }
-
+    public List<Map<String,Object>> findAll(String group_name) { return abkRecordingMapper.findGroup(group_name); }
 
 
     @Override
