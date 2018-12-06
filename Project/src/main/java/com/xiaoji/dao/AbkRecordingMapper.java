@@ -10,6 +10,8 @@ public interface AbkRecordingMapper {
 
     Map findByAbkId(String abk_id);
 
+    Map findByInit(Map map);
+
     Map findByDocumentName(String documentName);
 
     List<Map<String,Object>> findGroup(String group_name);

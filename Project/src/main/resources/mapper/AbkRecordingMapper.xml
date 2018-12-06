@@ -10,36 +10,57 @@
     </select>
 
     <select id="findByAbkId" resultType="map">
-        SELECT * FROM abk_recording WHERE abk_id = #{abk_id}
+        SELECT
+            *
+        FROM
+            abk_recording
+        WHERE
+            abk_id = #{abk_id}
+    </select>
+
+    <select id="findByInit" resultType="map">
+        SELECT
+            *
+        FROM
+            abk_recording
+        WHERE
+            group_name = #{group_name}
+        AND sa_prefix = #{sa_prefix}
+        AND template_id = #{template_id}
+        AND template_name = #{template_name}
+        AND template_class = #{template_class}
+        AND document_name = #{document_name}
     </select>
 
     <insert id="insert">
         INSERT INTO abk_recording
             (
                 group_name,
-                is_public,
                 sa_prefix,
                 template_id,
                 template_name,
                 template_class,
-                abl_id,
-                is_old,
                 document_name,
                 document_type,
+                abl_id,
+                is_old,
+                old_abl_id,
+                file_name,
                 create_date
             )
         VALUE
             (
                 #{group_name},
-                #{is_public},
                 #{sa_prefix},
                 #{template_id},
                 #{template_name},
                 #{template_class},
-                #{abl_id},
-                #{is_old},
                 #{document_name},
                 #{document_type},
+                #{abl_id},
+                #{is_old},
+                #{old_abl_id},
+                #{file_name},
                 DATE_FORMAT(NOW(), '%Y-%m-%d %T')
             )
     </insert>
@@ -52,8 +73,7 @@
         template_class = #{template_class},
         abl_id = #{abl_id},
         is_old = #{is_old},
-        document_name = #{document_name},
-        document_type = #{document_type},
+        old_abl_id = #{old_abl_id},
         update_date = DATE_FORMAT(NOW(), '%Y-%m-%d %T')
         WHERE abk_id = #{abk_id}
     </update>
