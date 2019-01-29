@@ -1,0 +1,16 @@
+.header_time{
+  float: right;
+  width: 342px;
+  font-size: 24px;
+}
+
+.header_dt{
+  float: left;
+  min-width: 20px;
+  cursor: pointer;
+}
+.header_dt_num{
+  float: left;
+  width: 224px;
+  text-align: center;
+}

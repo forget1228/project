@@ -1,0 +1,50 @@
+<div class="body_content" [ngStyle]="{'overflow-y':'auto','height':maxHeight+'px'}">
+  <div nz-row>
+    <div nz-col nzSpan="24" style="text-align: center">注意：上传文件请将文件一选择工资表，文件二选择社保表。sheet名称 为上传日期,格式为 2018.1 或 2018.10 </div>
+    <div nz-col nzSpan="24" class="report_table">
+      <nz-tabset [nzSelectedIndex]="selectedIndex" >
+        <nz-tab  *ngFor="let m of monthList;let i = index;" nzTitle="{{m}}" (nzClick)="tabClick(i)">
+          <nz-table #nzTable [nzLoading]="tableLoading" [nzData]="dataSet"
+                    [nzPageSize]="500" [nzScroll]="{ y: maxHeight-177+'px' }"
+                    [nzHideOnSinglePage]="true">
+            <thead >
+            <tr>
+              <th nzWidth="7%">时间</th>
+              <th nzWidth="8%">姓名</th>
+              <th nzWidth="8%">日薪</th>
+              <th nzWidth="8%">项目补贴</th>
+              <th nzWidth="8%">餐补</th>
+              <th nzWidth="8%">其他</th>
+              <th nzWidth="8%">事假</th>
+              <th nzWidth="10%">工资小结</th>
+              <th nzWidth="10%">公司承担</th>
+              <th nzWidth="10%">合计</th>
+              <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of nzTable.data" style="text-align: right">
+              <td style="text-align: left">{{data.wage_date}}</td>
+              <td style="text-align: left">{{data.wage_name}}</td>
+              <td >{{data.wage_money_day}}</td>
+              <td>{{data.wage_benefits}}</td>
+              <td>{{data.wage_meal}}</td>
+              <td>{{data.wage_else}}</td>
+              <td>{{data.wage_leave}}</td>
+              <td>{{data.wage_base_total}}</td>
+              <td>{{data.company_total}}</td>
+              <td>{{data.count}}</td>
+              <td></td>
+            </tr>
+            <tr style="text-align: right">
+              <td ng-repeat="(key,value) in total">{{value}}</td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </div>
+
+
+</div>

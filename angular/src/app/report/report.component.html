@@ -1,0 +1,63 @@
+<nz-layout>
+  <nz-header class="xj_header" >
+    <app-header ></app-header>
+  </nz-header>
+  <nz-layout>
+    <nz-content [ngStyle]="ngStyle" (window:resize)="onResize($event)">
+      <div style="background:#fff;">
+        <app-content [maxHeight]="ngStyle['minHeight']"></app-content>
+      </div>
+    </nz-content>
+    <!--<nz-sider>Sider</nz-sider>-->
+    <nz-sider nzCollapsible [nzTrigger]="triggerTemplate"
+              style="margin-top: 64px;background-color: white">
+      <div class="logo">
+      </div>
+
+      <div class="upload_for_xls">
+        <div nz-row>
+          <div nz-col nzSpan="24" >
+            <div nz-col nzSpan="12" >
+            <nz-upload nzListType="picture-card"
+                       [nzAccept]="'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                       [(nzFileList)]="fileList1"
+                       [nzBeforeUpload]="beforeUpload1"
+                       [nzShowButton]="fileList1.length < 1">
+              <i class="anticon anticon-plus"></i>
+              <div class="ant-upload-text">工资</div>
+            </nz-upload>
+            </div>
+            <div nz-col nzSpan="12" >
+              <nz-upload nzListType="picture-card"
+                         [nzAccept]="'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                         [(nzFileList)]="fileList2"
+                         [nzBeforeUpload]="beforeUpload2"
+                         [nzShowButton]="fileList2.length < 1">
+                <i class="anticon anticon-plus"></i>
+                <div class="ant-upload-text">社保</div>
+              </nz-upload>
+            </div>
+          </div>
+          <div nz-col nzSpan="24" >
+            <div style=" margin-top: 16px;">
+              <label nz-checkbox [(ngModel)]="switchValue">覆盖上一次报表</label>
+            </div>
+          </div>
+          <div nz-col nzSpan="24" style=" margin-top: 16px;text-align: center">
+            <span nz-popconfirm
+                  [nzTitle]="getPopTitle()"
+                  [nzCondition]="todayYear == selectedYear"
+                  (nzOnConfirm)="handleUpload(1)"
+                  (nzOnCancel)="handleUpload(2)">
+              <button nz-button [nzType]="'primary'" [nzLoading]="uploading"
+                [disabled]="fileList1.length == 0 || fileList2.length == 0" style="margin-top: 16px">
+              {{ uploading ? '上传中...' : '开始上传' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </nz-sider>
+  </nz-layout>
+  <!--<nz-footer>Footer</nz-footer>-->
+</nz-layout>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoji.dao.BbgMapper">
+    
+    <select id="findBbgByDate" resultType="map">
+        SELECT
+			*
+        FROM
+            bbg_wage t1 LEFT JOIN bbg_tax t2
+        ON t1.wage_name = t2.tax_name AND t1.wage_date = t2.tax_date
+        WHERE t1.wage_date = #{wage_date,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findSUMBbgByDate" resultType="map">
+        SELECT
+        t1.wage_date wage_date,
+        '合计' wage_name,
+        cast(SUM(t1.wage_benefits)as decimal(15,2)) wage_benefits,
+	    cast(SUM(t1.wage_meal)as decimal(15,2)) wage_meal,
+        cast(SUM(t1.wage_else)as decimal(15,2)) wage_else,
+	    cast(SUM(t1.wage_base_total)as decimal(15,2)) wage_base_total,
+	    cast(SUM(t1.wage_total)as decimal(15,2)) wage_total,
+	    cast(SUM(t2.company_total)as decimal(15,2)) company_total
+        FROM
+        bbg_wage t1 LEFT JOIN bbg_tax t2
+        ON t1.wage_name = t2.tax_name AND t1.wage_date = t2.tax_date
+        WHERE t1.wage_date = #{wage_date,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findSUMBbgByYear" resultType="map">
+        SELECT
+        t1.wage_date wage_date,
+		cast(SUM(t1.wage_base_total)as decimal(15,2)) wage_base_total,
+		cast(SUM(t2.company_total)as decimal(15,2)) company_total,
+		cast(SUM(t1.wage_base_total)+SUM(t2.company_total)as decimal(15,2)) count
+        FROM
+        bbg_wage t1 LEFT JOIN bbg_tax t2
+        ON t1.wage_name = t2.tax_name AND t1.wage_date = t2.tax_date
+        WHERE t1.wage_date LIKE  #{wage_date,jdbcType=VARCHAR}+'%'
+        GROUP BY t1.wage_date
+    </select>
+    
+    <insert id="insertBbgWage">
+    INSERT INTO bbg_wage
+        (
+            wage_no,
+            wage_dept,
+            user_id,
+            wage_name,
+            wage_join_dt,
+            wage_phone,
+            wage_work_count,
+            wage_money_day,
+            wage_base_money,
+            wage_subsidy,
+            wage_benefits,
+            wage_meal,
+            wage_else,
+            wage_leave,
+            wage_base_total,
+            wage_tax_pension,
+            wage_tax_medical,
+            wage_tax_unemployment,
+            wage_tax_accumulation,
+            wage_tax_salary,
+            wage_tax_tone,
+            wage_tax_else,
+            wage_total,
+            wage_date
+        )
+        VALUES
+            (
+                #{wage_no,jdbcType=VARCHAR},
+                #{wage_dept,jdbcType=VARCHAR},
+                #{user_id,jdbcType=VARCHAR},
+                #{wage_name,jdbcType=VARCHAR},
+                #{wage_joinDt,jdbcType=VARCHAR},
+                #{wage_phone,jdbcType=VARCHAR},
+                #{wage_workCount,jdbcType=INTEGER},
+                #{wage_moneyDay,jdbcType=VARCHAR},
+                #{wage_baseMoney,jdbcType=VARCHAR},
+                #{wage_subsidy,jdbcType=VARCHAR},
+                #{wage_benefits,jdbcType=VARCHAR},
+                #{wage_meal,jdbcType=VARCHAR},
+                #{wage_else,jdbcType=VARCHAR},
+                #{wage_leave,jdbcType=VARCHAR},
+                #{wage_baseTotal,jdbcType=VARCHAR},
+                #{wage_taxPension,jdbcType=VARCHAR},
+                #{wage_taxMedical,jdbcType=VARCHAR},
+                #{wage_taxUnemployment,jdbcType=VARCHAR},
+                #{wage_taxAccumulation,jdbcType=VARCHAR},
+                #{wage_taxSalary,jdbcType=VARCHAR},
+                #{wage_taxTone,jdbcType=VARCHAR},
+                #{wage_taxElse,jdbcType=VARCHAR},
+                #{wage_total,jdbcType=VARCHAR},
+                #{wage_date,jdbcType=VARCHAR}
+	        )
+    </insert>
+    <delete id="deleteBbgWageByWageDate">
+        delete from bbg_wage where wage_date = #{wage_date,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteBbgWageByWageId">
+        delete from bbg_wage where wage_id = #{wage_id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertBbgTax">
+        INSERT INTO bbg_tax (
+            tax_no,
+            tax_name,
+            tax_house_hold,
+            tax_min_base_payment,
+            company_pension,
+            company_medical,
+            company_unemployment,
+            company_fertility,
+            company_injury,
+            company_total,
+            personal_pension,
+            personal_medical,
+            personal_unemployment,
+            personal_toatl,
+            tax_total,
+            tax_payment,
+            tax_remark,
+            tax_date
+        )
+        VALUES
+            (
+                #{tax_no,jdbcType=VARCHAR},
+                #{tax_name,jdbcType=VARCHAR},
+                #{tax_household,jdbcType=VARCHAR},
+                #{tax_minBasePayment,jdbcType=VARCHAR},
+                #{company_pension,jdbcType=VARCHAR},
+                #{company_medical,jdbcType=VARCHAR},
+                #{company_unemployment,jdbcType=INTEGER},
+                #{company_fertility,jdbcType=VARCHAR},
+                #{company_injury,jdbcType=VARCHAR},
+                #{company_total,jdbcType=VARCHAR},
+                #{personal_pension,jdbcType=VARCHAR},
+                #{personal_medical,jdbcType=VARCHAR},
+                #{personal_unemployment,jdbcType=VARCHAR},
+                #{personal_toatl,jdbcType=VARCHAR},
+                #{tax_total,jdbcType=VARCHAR},
+                #{tax_payment,jdbcType=VARCHAR},
+                #{tax_remark,jdbcType=VARCHAR},
+                #{tax_date,jdbcType=VARCHAR}
+            )
+    </insert>
+    <delete id="deleteBbgWageByTaxDate">
+        delete from bbg_tax where tax_date = #{tax_date,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteBbgWageByTaxId">
+        delete from bbg_tax where tax_id = #{tax_id,jdbcType=VARCHAR}
+    </delete>
+    <delete id="updateBbgWageByTaxId">
+        UPDATE bbg_tax
+        SET tax_house_hold = #{tax_house_hold,jdbcType=VARCHAR}
+        tax_min_base_payment = #{tax_min_base_payment,jdbcType=VARCHAR}
+        company_pension = #{company_pension,jdbcType=VARCHAR}
+        company_medical = #{company_medical,jdbcType=VARCHAR}
+        company_unemployment = #{company_unemployment,jdbcType=VARCHAR}
+        company_fertility = #{company_fertility,jdbcType=VARCHAR}
+        company_injury = #{company_injury,jdbcType=VARCHAR}
+        company_total = #{company_total,jdbcType=VARCHAR}
+        personal_pension = #{personal_pension,jdbcType=VARCHAR}
+        personal_medical = #{personal_medical,jdbcType=VARCHAR}
+        personal_unemployment = #{personal_unemployment,jdbcType=VARCHAR}
+        personal_toatl = #{personal_toatl,jdbcType=VARCHAR}
+        tax_total = #{tax_total,jdbcType=VARCHAR}
+        tax_payment = #{tax_payment,jdbcType=VARCHAR}
+        tax_remark = #{tax_remark,jdbcType=VARCHAR}
+        WHERE
+            tax_id = #{tax_id,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

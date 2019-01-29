@@ -1,0 +1,16 @@
+<div style=" line-height: 64px;
+    height: 64px;color: #fff">
+  <span style="font-size: 28px;">
+    <img style="margin-top: -10px;    height: 38px;" src="{{hostPort}}static/image/logo.png" alt="Logo">效吉项目管理
+  </span>
+
+  <span class="header_time ">
+      <span class="header_dt header_prev_month" (click)="clickLeftFun()">&lt;</span>
+      <span class="header_dt_num">
+          <span class="header_month"> {{monthObj.src}} </span>
+          <span class="header_year"> {{yearString}} </span>
+      </span>
+      <span class="header_dt header_next_month" (click)="clickRightFun()">&gt;</span>
+     <span class="header_dt header_today" (click)="toDay()">今天</span>
+  </span>
+</div>

@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+/*@import url('node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css');*/
+@import "../node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css";
+
+/*.body_content .ant-table-body,
+.body_content .ant-table-header{
+  overflow-y: auto !important;
+}*/
+.body_content .ant-table-body{
+  overflow-y: auto !important;
+}
+
+.upload_for_xls .ant-upload-list-picture-card>.ant-upload-list-item {
+  width: 62px;
+  height: 62px;
+}
+
+.upload_for_xls .ant-upload {
+  width: 60px !important;
+  height: 60px !important;
+}
+.ant-popover-message .ant-popover-message-title{
+  word-break: break-all !important;
+  word-wrap: break-word !important;
+  max-width: 190px !important;
+}
+
+
+.report_table .ant-table-thead>tr>th{
+  text-align: right !important;
+}
+
+.report_table .ant-table-thead>tr>th:nth-child(1),
+.report_table .ant-table-thead>tr>th:nth-child(2){
+  text-align: left !important;
+}
+/*
+.report_table .ant-table-thead>tr>th:nth-last-child(1){
+  padding-right: 34px !important;
+}
+*/
+
+/*.ant-upload-select .ant-upload-select-picture-card .ng-star-inserted*/
