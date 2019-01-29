@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.PaymentNoticeDao" >
+    <update id="insertPaymentLog" parameterType="PaymentNotice">
+       insert into acct_payment_log
+            (
+            SERIALNO,
+            relativeobjectno,
+            RELATIVEOBJECTTYPE,
+            TRANSSERIALNO,
+            ACTUALPAYPRINCIPALAMT,
+            ACTUALPAYINTERESTAMT,
+            actualpaydate,
+            ACTUALPAYDATETIME
+            )
+        VALUES(
+            #{paymentLogId},
+            #{serialno},
+            #{CHANNEL_CODE},
+            #{REPAY_NO},
+            #{REPAY_AMOUNT},
+            #{INTEREST_MONEY},
+            #{actualpaydate},
+            #{REPAY_DATETIME}
+            )
+    </update>
+    <select id="findBusinessContract" resultType="map" parameterType="java.lang.String">
+      SELECT
+       *
+      FROM business_contract
+      WHERE  loanno = #{condition,jdbcType=VARCHAR}
+    </select>
+    <select id="findLoan" resultType="map" parameterType="java.lang.String">
+      SELECT
+       *
+      FROM acct_loan
+      WHERE  CONTRACTSERIALNO = #{condition}
+    </select>
+    <update id="UpDateLoan" parameterType="map">
+        UPDATE acct_loan SET
+            FINISHDATE = #{FINISHDATE_Time},
+            LOANSTATUS = #{HQ_FLAG},
+           UNPAYBALANCE = #{LOAN_BALANCE}
+        WHERE CONTRACTSERIALNO = #{serialno}
+    </update>
+    <insert id="insertLoan" parameterType="map">
+        insert into acct_loan
+            (
+            SERIALNO,
+            CONTRACTSERIALNO,
+            CUSTOMERID,
+            CUSTOMERNAME,
+
+            CURRENCY,
+            BUSINESSSUM,
+            BusinessNo,
+            ProjectNo,
+            CooperationNo,
+            UserName,
+            CertID,
+
+            UNPAYBALANCE,
+
+            BeginDate,
+            EndDate,
+            LOANSTATUS,
+            INPUTDATE
+            )
+        VALUES(
+            #{loanId},
+            #{serialno},
+            #{customerid},
+            #{customername},
+
+            #{CURRENCY},
+            #{businesssum},
+            #{BusinessNo},
+            #{ProjectNo},
+            #{CooperationNo},
+            #{UserName},
+            #{CERTID},
+
+            #{LOAN_BALANCE},
+
+            #{begindate},
+            #{JIEJU_END_DATE},
+            #{HQ_FLAG},
+            DATE_FORMAT(NOW(),'%Y-%m-%d') )
+    </insert>
+</mapper>

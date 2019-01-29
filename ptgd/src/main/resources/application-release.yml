@@ -1,0 +1,23 @@
+#release 生产环境
+
+
+spring:
+    datasource:
+        name: test
+        url: jdbc:mysql://10.100.62.11:3306/zzcvs??useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+        username: zzcvs
+        password: w&j@lSm1
+        driver-class-name: com.mysql.jdbc.Driver
+
+# 秘钥地址
+mac:
+  paw:
+    path: /usr/alnico11/lib/cebkey/
+
+# 9000接口地址
+transaction:
+  url: https://webebis.cebbank.com:3031
+
+# shell 脚本地址
+gdFileDownload:
+ url: /app/alnico11/gd_file_download/

@@ -1,0 +1,24 @@
+<html><head>
+    
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta content="always" name="referrer">
+    <meta name="theme-color" content="#2932e1">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <title>文件上传</title>
+<body link="#0000cc" style="">
+<form action="http://localhost:8080/fileUpload" method="POST" enctype="multipart/form-data">
+    <p>单文件上传：<br/>
+    <input type="file" name="fileName"/>
+    <input type="submit" value = "上传"/>
+</form>
+<form method="POST" enctype="multipart/form-data" 
+    action="http://localhost:8080/multifileUpload">
+    <p>多文件上传：</p>
+    <p>文件1：<input type="file" name="fileName" /></p>
+    <p>文件2：<input type="file" name="fileName" /></p>
+    <p><input type="submit" value="上传" /></p>
+</form>
+<a href="http://localhost:8080/fileDownload">下载</a>
+
+</body></html>

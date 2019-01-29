@@ -1,0 +1,23 @@
+
+spring:
+    datasource:
+        name: test
+        url: jdbc:mysql://10.100.44.39:3306/zzcvs??useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+        username: zzcvs
+        password: zzcvs
+        driver-class-name: com.mysql.jdbc.Driver
+
+mac:
+  paw:
+    path: /usr/alnico11/lib/cebkey/
+
+# 9000接口地址
+# https://111.205.51.104:3031     --2018-10-19 end
+# https://111.205.51.130:3031     --2018-10-23 end
+# https://111.205.51.135:3031     -- 现使用
+transaction:
+  url: https://111.205.51.135:3031
+
+# shell 脚本地址
+gdFileDownload:
+ url: /data/mft/gd_file_download/

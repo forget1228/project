@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.IntendedDao" >
+
+    <select id="findCustomerInfo" resultType="map">
+        SELECT
+        CUSTOMERID,
+        CUSTOMERNAME,
+        CUSTOMERTYPE,
+        CERTTYPE,
+        CERTID,
+        CUSTOMERPASSWORD,
+        INPUTORGID,
+        INPUTUSERID,
+        INPUTDATE,
+        REMARK,
+        MFCUSTOMERID,
+        STATUS,
+        BELONGGROUPID,
+        CHANNEL,
+        LOANCARDNO,
+        CUSTOMERSCALE,
+        EFFSTATUS,
+        CERTSTADATE,
+        CERTENDDATE,
+        CATEGORYOF,
+        LISTTYPE,
+        ORIGIN,
+        XDCUSTOMERID,
+        phone,
+        COUNTRYTYPE
+        FROM customer_info
+        WHERE CERTTYPE = #{certType}
+        AND CERTID = #{certId}
+    </select>
+
+    <insert id="addCustomerInfo">
+        INSERT INTO customer_info(
+        CUSTOMERID,
+        CUSTOMERNAME,
+        CUSTOMERTYPE,
+        CERTTYPE,
+        CERTID,
+        INPUTDATE,
+        STATUS,
+        CHANNEL,
+        EFFSTATUS)
+        VALUES(
+        #{customerId},
+        #{customerName},
+        #{customerType},
+        #{certType},
+        #{customerCode},
+        DATE_FORMAT(NOW(),'%Y-%m-%d %T'),
+        '01',
+        #{channel},
+        '1')
+    </insert>
+
+    <update id="updateCustomerInfo">
+        UPDATE customer_info
+        SET CUSTOMERNAME = #{customerName}
+        WHERE CUSTOMERID =#{customerId}
+        AND CERTTYPE = #{certType}
+        AND CERTID = #{customerCode}
+    </update>
+
+
+    <insert id="addEntInfo">
+        INSERT INTO ent_info(
+        CORPID,
+        ENTERPRISENAME,
+        CUSTOMERID,
+        ORGNATURE,
+        INPUTDATE)
+        VALUES(
+        #{customerCode},
+        #{customerName},
+        #{customerId},
+        '030',
+        DATE_FORMAT(NOW(),'%Y-%m-%d'))
+    </insert>
+
+    <update id="updateEntInfo">
+        UPDATE ent_info
+        SET ENTERPRISENAME = #{customerName}
+        WHERE CUSTOMERID =#{customerId}
+        AND CORPID = #{customerCode}
+    </update>
+
+    <select id="findEntCustomerId"  resultType="java.lang.String">
+        SELECT customerId
+        FROM ent_info
+        WHERE customerId = #{customerId}
+    </select>
+</mapper>

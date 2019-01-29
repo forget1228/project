@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.DealerDataDao" >
+    <insert id="insertGdCustInfo">
+        insert into gd_cust_info
+            (
+             CUSTNO
+            ,CUSTNAME
+            ,SORTNAME
+            ,LICENCE
+            ,CUSTOMERCODE
+            ,huaweistorenumber
+            ,STORENUMBER
+            ,LEGALCOMMISS
+            ,CERTIFICATETYPE
+            ,CERTIFICATENUMBER
+            ,PHONENO
+            ,BRACHCOMPANY
+            ,PROVINCE
+            ,CITY
+            ,CUSTOMERTYPE
+            ,TRADINGVOLUMEYEAR
+            ,TRADINGVOLUMEMONTH
+            ,TRADINGTIMESYEAR
+            ,TRADINGTIMESMONTH
+            ,SINGLETRADINGAMOUNT
+            ,HUAWEITRADINGVOLUME
+            ,HUAWEITRADINGVOLUMEMONTH
+            ,HUAWEIBRANDRATE
+            ,CUSTOMERID
+            ,INPUTDATE
+            )
+        VALUES(
+            #{CUST_NO,jdbcType=VARCHAR},
+            #{CUST_NAME,jdbcType=VARCHAR},
+            #{CUST_SORT_NAME,jdbcType=VARCHAR},
+            #{LICENCE_NO,jdbcType=VARCHAR},
+            #{CUSTOMER_CODE,jdbcType=VARCHAR},
+            #{HUAWEI_EXPERIENCE_STORE_NUMBER,jdbcType=INTEGER},
+            #{STORE_NUMBER,jdbcType=INTEGER},
+            #{LEGAL_COMMISS,jdbcType=VARCHAR},
+            #{CERTIFICATE_TYPE,jdbcType=VARCHAR},
+            #{CERTIFICATE_NUMBER,jdbcType=VARCHAR},
+            #{OWNER_PHONENO,jdbcType=VARCHAR},
+            #{BRACH_COMPANY,jdbcType=VARCHAR},
+            #{MANAGE_PROVINCE,jdbcType=VARCHAR},
+            #{MANAGE_CITY,jdbcType=VARCHAR},
+            #{CUSTOMER_TYPE,jdbcType=VARCHAR},
+            #{TRADING_VOLUME_YEAR,jdbcType=INTEGER},
+            #{TRADING_VOLUME_MONTH,jdbcType=INTEGER},
+            #{TRADING_TIMES_YEAR,jdbcType=INTEGER},
+            #{TRADING_TIMES_MONTH,jdbcType=INTEGER},
+            #{SINGLE_TRADING_AMOUNT,jdbcType=INTEGER},
+            #{HUAWEI_TRADING_VOLUME,jdbcType=INTEGER},
+            #{HUAWEI_TRADING_VOLUME_MONTH,jdbcType=INTEGER},
+            #{HUAWEI_BRAND_RATE,jdbcType=INTEGER},
+            #{CUSTOMER_ID,jdbcType=INTEGER},
+            DATE_FORMAT(NOW(),'%Y-%m-%d %T') )
+    </insert>
+    <select id="findCustomerInfo" parameterType="map" resultType="map">
+        SELECT
+          CUSTOMERID
+        ,CUSTOMERNAME
+        ,CUSTOMERTYPE
+        ,CERTTYPE
+        ,CERTID
+        ,CUSTOMERPASSWORD
+        ,INPUTORGID
+        ,INPUTUSERID
+        ,INPUTDATE
+        ,REMARK
+        ,MFCUSTOMERID
+        ,STATUS
+        ,BELONGGROUPID
+        ,CHANNEL
+        ,LOANCARDNO
+        ,CUSTOMERSCALE
+        ,EFFSTATUS
+        ,CERTSTADATE
+        ,CERTENDDATE
+        ,CATEGORYOF
+        ,LISTTYPE
+        ,ORIGIN
+        ,XDCUSTOMERID
+        ,phone
+        ,COUNTRYTYPE
+        FROM customer_info
+        WHERE CERTTYPE = #{CERTTYPE,jdbcType=VARCHAR} AND CERTID = #{CUSTOMER_CODE,jdbcType=VARCHAR} for update
+    </select>
+
+    <select id="findGdCustInfo" parameterType="map" resultType="map">
+        SELECT
+          CUSTNO
+        FROM gd_cust_info
+        WHERE  CUSTNO =  #{CUST_NO,jdbcType=VARCHAR} for update
+    </select>
+
+    <update id="updateGdCustInfo">
+        UPDATE gd_cust_info
+        SET
+        CUSTNAME = #{CUST_NAME,jdbcType=VARCHAR}
+        ,SORTNAME = #{CUST_SORT_NAME,jdbcType=VARCHAR}
+        ,LICENCE = #{LICENCE_NO,jdbcType=VARCHAR}
+        ,huaweistorenumber = #{HUAWEI_EXPERIENCE_STORE_NUMBER,jdbcType=INTEGER}
+        ,STORENUMBER = #{STORE_NUMBER,jdbcType=INTEGER}
+        ,LEGALCOMMISS = #{LEGAL_COMMISS,jdbcType=VARCHAR}
+        ,CERTIFICATETYPE = #{CERTIFICATE_TYPE,jdbcType=VARCHAR}
+        ,CERTIFICATENUMBER = #{CERTIFICATE_NUMBER,jdbcType=VARCHAR}
+        ,PHONENO = #{OWNER_PHONENO,jdbcType=VARCHAR}
+        ,BRACHCOMPANY = #{BRACH_COMPANY,jdbcType=VARCHAR}
+        ,PROVINCE = #{MANAGE_PROVINCE,jdbcType=VARCHAR}
+        ,CITY = #{MANAGE_CITY,jdbcType=VARCHAR}
+        ,CUSTOMERTYPE = #{CUSTOMER_TYPE,jdbcType=VARCHAR}
+        ,TRADINGVOLUMEYEAR = #{TRADING_VOLUME_YEAR,jdbcType=INTEGER}
+        ,TRADINGVOLUMEMONTH = #{TRADING_VOLUME_MONTH,jdbcType=INTEGER}
+        ,TRADINGTIMESYEAR = #{TRADING_TIMES_YEAR,jdbcType=INTEGER}
+        ,TRADINGTIMESMONTH = #{TRADING_TIMES_MONTH,jdbcType=INTEGER}
+        ,SINGLETRADINGAMOUNT = #{SINGLE_TRADING_AMOUNT,jdbcType=INTEGER}
+        ,HUAWEITRADINGVOLUME = #{HUAWEI_TRADING_VOLUME,jdbcType=INTEGER}
+        ,HUAWEITRADINGVOLUMEMONTH = #{HUAWEI_TRADING_VOLUME_MONTH,jdbcType=INTEGER}
+        ,HUAWEIBRANDRATE = #{HUAWEI_BRAND_RATE,jdbcType=INTEGER}
+        WHERE CUSTNO =  #{CUST_NO,jdbcType=VARCHAR}
+    </update>
+
+    <insert id="insertGdPttlRiskLog">
+        INSERT INTO gd_pttl_risk_log
+          (
+          serialno,
+          customerid,
+          customername,
+          ruleid,
+          ruleresult,
+          reason,
+          operationby,
+          operationdate
+          )
+        VALUE
+          (
+              #{serialno,jdbcType=VARCHAR},
+              #{customerid,jdbcType=VARCHAR},
+              #{customername,jdbcType=VARCHAR},
+              #{ruleid,jdbcType=VARCHAR},
+              #{ruleresult,jdbcType=VARCHAR},
+              #{reason,jdbcType=VARCHAR},
+              #{operationby,jdbcType=VARCHAR},
+              DATE_FORMAT(NOW(),'%Y-%m-%d %T')
+          )
+    </insert>
+</mapper>
+
+

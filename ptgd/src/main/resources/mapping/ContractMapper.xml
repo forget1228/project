@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.ContractDao" >
+    
+	<select id="findGdPttlObjectRule" resultType="map">
+		select *  from gd_pttl_object_rule where tablename='gd_contract_info'
+	</select>
+	<update id="updateGdPttlObjectRule">
+		UPDATE gd_pttl_object_rule SET maxno = #{maxno,jdbcType=VARCHAR} where tablename='gd_contract_info'
+	</update>
+
+
+	<select id="findGdContractInfo" parameterType="map" resultType="map">
+		SELECT
+			*
+		FROM
+			gd_contract_info
+		WHERE
+			customerid = #{customerid,jdbcType=VARCHAR}
+		AND batchnum = #{batchnum,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertGdContractInfo">
+		INSERT INTO gd_contract_info (
+			customerid,
+			channelcode,
+			operationtype,
+			operationreason,
+			batchnum,
+			customercode,
+			customername,
+			agreementnumber,
+			customerrepresentative,
+			principalagent,
+			customeraddress,
+			customerphone,
+			contractno,
+			maxcreditline,
+			registrationaddress,
+			postaladdress,
+			customercontact,
+			contactnumber,
+			contactfax,
+			contactpostalcode,
+			totalcredit,
+			fdbbzhtno,
+			dcdyhtno,
+			creditaugmentedagreementnumber,
+			STATUS,
+			refusemsg,
+			inputdate,
+			updatedate,
+			operationby
+		)
+		VALUES
+			(
+				#{CUSTOMER_ID,jdbcType=VARCHAR},
+				#{CHANNEL_CODE,jdbcType=VARCHAR},
+				#{OPERATION_TYPE,jdbcType=VARCHAR},
+				NULL,
+				#{CONTRACT_BATCH_NUMBER,jdbcType=VARCHAR},
+				#{CUSTOMER_CODE,jdbcType=VARCHAR},
+				#{CUSTOMER_NAME,jdbcType=VARCHAR},
+				#{AGREEMENT_NUMBER,jdbcType=VARCHAR},
+				#{CUSTOMER_REPRESENTATIVE,jdbcType=VARCHAR},
+				#{PRINCIPAL_AGENT,jdbcType=VARCHAR},
+				#{CUSTOMER_ADDRESS,jdbcType=VARCHAR},
+				#{CUSTOMER_PHONE,jdbcType=VARCHAR},
+				#{CONTRACT_NO,jdbcType=VARCHAR},
+				#{MAX_CREDIT_LINE},
+				#{CUSTOMER_REGISTRATION_ADDRESS,jdbcType=VARCHAR},
+				#{CUSTOMER_POSTAL_ADDRESS,jdbcType=VARCHAR},
+				#{CUSTOMER_CONTACT,jdbcType=VARCHAR},
+				#{CONTACT_NUMBER,jdbcType=VARCHAR},
+				#{CONTACT_FAX,jdbcType=VARCHAR},
+				#{CONTACT_POSTAL_CODE,jdbcType=VARCHAR},
+				#{TOTAL_CREDIT},
+				#{FDBBZHT_NO,jdbcType=VARCHAR},
+				#{DCDYHT_NO,jdbcType=VARCHAR},
+				#{CREDIT_AUGMENTED_AGREEMENT_NUMBER,jdbcType=VARCHAR},
+				'0',
+				NULL,
+				DATE_FORMAT(NOW(), '%Y-%m-%d %T'),
+				NULL,
+				'系统'
+			)
+    </insert>
+
+    <update id="updateGdContractInfo">
+		UPDATE gd_contract_info
+		SET channelcode = #{CHANNEL_CODE,jdbcType=VARCHAR},
+		operationtype = #{OPERATION_TYPE,jdbcType=VARCHAR},
+		operationreason = #{REFUSAL_REASON,jdbcType=VARCHAR},
+		customercode = #{CUSTOMER_CODE,jdbcType=VARCHAR},
+		customername = #{CUSTOMER_NAME,jdbcType=VARCHAR},
+		agreementnumber = #{AGREEMENT_NUMBER,jdbcType=VARCHAR},
+		customerrepresentative = #{CUSTOMER_REPRESENTATIVE,jdbcType=VARCHAR},
+		principalagent = #{PRINCIPAL_AGENT,jdbcType=VARCHAR},
+		customeraddress = #{CUSTOMER_ADDRESS,jdbcType=VARCHAR},
+		customerphone = #{CUSTOMER_PHONE,jdbcType=VARCHAR},
+		contractno = #{CONTRACT_NO,jdbcType=VARCHAR},
+		maxcreditline = #{MAX_CREDIT_LINE},
+		registrationaddress = #{CUSTOMER_REGISTRATION_ADDRESS,jdbcType=VARCHAR},
+		postaladdress = #{CUSTOMER_POSTAL_ADDRESS,jdbcType=VARCHAR},
+		customercontact = #{CUSTOMER_CONTACT,jdbcType=VARCHAR},
+		contactnumber = #{CONTACT_NUMBER,jdbcType=VARCHAR},
+		contactfax = #{CONTACT_FAX,jdbcType=VARCHAR},
+		contactpostalcode = #{CONTACT_POSTAL_CODE,jdbcType=VARCHAR},
+		totalcredit = #{TOTAL_CREDIT},
+		STATUS = '0',
+		 refusemsg = NULL,
+		 updatedate = DATE_FORMAT(NOW(), '%Y-%m-%d %T'),
+		 operationby = '系统'
+		WHERE
+			customerid = #{CUSTOMER_ID,jdbcType=VARCHAR}
+		AND batchnum = #{CONTRACT_BATCH_NUMBER,jdbcType=VARCHAR}
+    </update>
+
+	<update id="updateGdContractInfoStatus">
+		UPDATE gd_contract_info
+		SET
+		STATUS = '3',
+		refusemsg = NULL
+		WHERE
+		customerid = #{customerid,jdbcType=VARCHAR}
+		AND batchnum = #{batchnum,jdbcType=VARCHAR}
+	</update>
+
+
+
+    <select id="findGdContractFlow" parameterType="map" resultType="map">
+        SELECT
+			*
+		FROM
+			gd_contract_flow
+		WHERE
+			customerid = #{customerid,jdbcType=VARCHAR}
+		AND batchnum = #{batchnum,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertGdContractFlow">
+        INSERT INTO gd_contract_flow (
+			serialno,
+			customerid,
+			customername,
+			batchnum,
+			oldstatus,
+			newstatus,
+			operationreason,
+			operationby,
+			operationdate
+		)
+		VALUES
+			(
+				#{serialno,jdbcType=VARCHAR},
+				#{customerid,jdbcType=VARCHAR},
+				#{customername,jdbcType=VARCHAR},
+				#{batchnum,jdbcType=VARCHAR},
+				#{oldstatus,jdbcType=VARCHAR},
+				#{newstatus,jdbcType=VARCHAR},
+				#{operationreason,jdbcType=VARCHAR},
+				#{operationby,jdbcType=VARCHAR},
+				DATE_FORMAT(NOW(), '%Y-%m-%d %T')
+			)
+    </insert>
+
+    <update id="updateGdContractFlow">
+        UPDATE gd_contract_flow SET
+        customername = #{customername,jdbcType=VARCHAR},
+        oldstatus = #{oldstatus,jdbcType=VARCHAR},
+        newstatus = #{newstatus,jdbcType=VARCHAR},
+        operationreason = #{operationreason,jdbcType=VARCHAR},
+        operationby = #{operationby,jdbcType=VARCHAR}
+        WHERE customerid = #{customerid,jdbcType=VARCHAR} AND batchnum = #{batchnum,jdbcType=VARCHAR}
+    </update>
+
+
+
+	<select id="findGdContractFile" parameterType="map" resultType="map">
+		SELECT
+		*
+		FROM
+		gd_contract_file
+		WHERE
+		customerid = #{customerid,jdbcType=VARCHAR}
+		AND batchnum = #{batchnum,jdbcType=VARCHAR}
+	</select>
+
+    <insert id="insertGdContractFile">
+		INSERT INTO gd_contract_file(
+			serialno,
+			fileno,
+			customerid,
+			inputdate,
+			channelcode,
+			customercode,
+			customername,
+			batchnum,
+			filename,
+			filepath,
+			contracttype
+		)
+		VALUES
+			(
+				#{serialno,jdbcType=VARCHAR},
+				#{fileno,jdbcType=VARCHAR},
+				#{customerid,jdbcType=VARCHAR},
+				DATE_FORMAT(NOW(), '%Y-%m-%d %T'),
+				#{channelcode,jdbcType=VARCHAR},
+				#{customercode,jdbcType=VARCHAR},
+				#{customername,jdbcType=VARCHAR},
+				#{batchnum,jdbcType=VARCHAR},
+				#{filename,jdbcType=VARCHAR},
+				#{filepath,jdbcType=VARCHAR},
+				#{contracttype,jdbcType=VARCHAR}
+			)
+    </insert>
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.OrderDao" >
+
+    <select id="findCustomerInfoForCustomerId" resultType="java.lang.String">
+        SELECT CUSTOMERID FROM customer_info
+        WHERE CERTTYPE = #{certType}
+        AND CERTID = #{certId}
+    </select>
+
+    <select id="findGdOrderNo" resultType="java.lang.String">
+        SELECT orderid FROM gd_order_info
+        WHERE orderid = #{orderNo}
+    </select>
+
+    <select id="findGdOrderInfo" resultType="map">
+        select channel,
+        coprid,
+        customername,
+        orderid,
+        orderamount,
+        orderdate,
+        selfpay,
+        selfpayrate,
+        brachcompany,
+        brachaccount,
+        customerid,
+        inputdate
+        from gd_order_info
+        WHERE orderid = #{orderNo}
+        AND coprid = #{customerCode}
+    </select>
+
+    <select id="findGdOrderInfoByThree" resultType="map">
+        select channel,
+        coprid,
+        customername,
+        orderid,
+        orderamount,
+        orderdate,
+        selfpay,
+        selfpayrate,
+        brachcompany,
+        brachaccount,
+        customerid,
+        inputdate
+        from gd_order_info
+        WHERE orderid = #{orderNo}
+        AND coprid = #{customerCode}
+        AND customername = #{customerName}
+    </select>
+
+    <insert id="addGdOrderInfo">
+        INSERT INTO gd_order_info(
+        channel,
+        coprid,
+        customername,
+        orderid,
+        orderamount,
+        orderdate,
+        selfpay,
+        selfpayrate,
+        brachcompany,
+        brachaccount,
+        customerid,
+        inputdate,
+        status)
+        VALUES(#{channel},
+        #{customerCode},
+        #{customerName},
+        #{orderNo},
+        #{orderAmount},
+        #{orderDate},
+        #{selfPay},
+        #{selfPayRate},
+        #{branchCompany},
+        #{branchAccount},
+        #{customerId},
+        DATE_FORMAT(NOW(),'%Y-%m-%d %T'),
+        '1')
+    </insert>
+
+    <update id="updateGdOrderInfo">
+        UPDATE gd_order_info SET customername = #{customerName},
+        orderamount = #{orderAmount},
+        orderdate = #{orderDate},
+        selfpay = #{selfPay},
+        selfpayrate = #{selfPayRate},
+        brachcompany = #{branchCompany},
+        brachaccount = #{branchAccount}
+        WHERE coprid = #{customerCode}
+        AND  orderid = #{orderNo}
+    </update>
+
+    <update id="updateGdStatus">
+        UPDATE gd_order_info SET status = #{orderStatus},rejectreason = #{reason}
+        WHERE channel = #{channel}
+        AND coprid = #{customerCode}
+        AND orderid = #{orderNo}
+    </update>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.ObjectMaxSnDao" >
+    <select id="findObjectMax" resultType="ObjectMaxSn">
+        SELECT
+            tablename tableName,
+            columnname columnName,
+            maxserialno maxSerialNo,
+            datefmt dateFmt,
+            nofmt noFmt
+        FROM OBJECT_MAXSN
+        WHERE tablename = #{tableName} AND columnname = #{columnName}  AND datefmt = #{dateFmt} FOR UPDATE
+    </select>
+
+    <update id="updateObjectMaxSnForMaxSerialNo" parameterType="ObjectMaxSn">
+        UPDATE OBJECT_MAXSN SET maxserialno=#{maxSerialNo} WHERE tablename = #{tableName} AND columnname = #{columnName}  AND datefmt = #{dateFmt}
+    </update>
+</mapper>

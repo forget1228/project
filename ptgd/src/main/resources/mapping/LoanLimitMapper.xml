@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.LoanLimitDao" >
+
+    <select id="findLoanLimitCustomerId"  resultType="java.lang.String">
+        SELECT customerid FROM loan_limit
+        WHERE customerid = #{customerId}
+    </select>
+
+    <insert id="addLoanLimit">
+        INSERT INTO loan_limit(
+        total,
+        effectivedate,
+        expireddate,
+        status,
+        inputdate,
+        serialno,
+        customerid,
+        customername,
+        available,
+        channel)
+        VALUES(#{totalLimit},
+        #{limitBeginDate},
+        #{limitEndDate},
+        #{creditLineState},
+        DATE_FORMAT(NOW(),'%Y-%m-%d %T'),
+        #{serialNo},
+        #{customerId},
+        #{customerName},
+        #{availableLimit},
+        #{channel})
+    </insert>
+
+    <update id="updateLoanLimit">
+        UPDATE loan_limit SET total = #{totalLimit},
+        available = #{availableLimit},
+        effectivedate =#{limitBeginDate},
+        expireddate = #{limitEndDate}
+        WHERE customerid = #{customerId}
+        AND customername = #{customerName}
+    </update>
+</mapper>

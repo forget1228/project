@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xj.ptgd.dao.LoanNoticeDao" >
+    <select id="findBusinessContractOrderId" resultType="map">
+        SELECT * FROM business_contract
+        WHERE ORDERSN = #{ORDER_NO}
+    </select>
+    <select id="findBusinessContractLoan" resultType="map">
+        SELECT * FROM business_contract
+        WHERE loanno = #{LOUS_NO}
+    </select>
+    <insert id="insertAcctLoan">
+        insert into acct_loan
+        (
+            SERIALNO,
+            CONTRACTSERIALNO,
+            CUSTOMERID,
+            CUSTOMERNAME,
+            CURRENCY,
+            BUSINESSSUM,
+            RATE,
+            PUTOUTDATE,
+            BusinessNo,
+            ProjectNo,
+            CooperationNo,
+            UserName,
+            CertID,
+            UNPAYBALANCE,
+            BeginDate,
+            EndDate,
+            LOANSTATUS,
+            INPUTDATE,
+            TERMMONTH
+        )
+        VALUES(
+            #{loanId},
+            #{serialno},
+            #{customerid},
+            #{CUSTOMER_NAME},
+            #{CURRENCY},
+            #{LOAN_MONEY},
+            #{EXECUTE_RATE},
+            DATE_FORMAT(NOW(),'%Y-%m-%d'),
+            #{ORDER_NO},
+            #{PROJECTCODE},
+            #{SERVORGNO},
+            #{CUSTOMER_NAME},
+            #{CUSTOMER_CODE},
+            #{LOAN_MONEY},
+            #{LOAN_START_DATE},
+            #{LOAN_END_DATE},
+            0,
+            DATE_FORMAT(NOW(),'%Y-%m-%d'),
+            #{termmonth}
+        )
+    </insert>
+
+
+
+    <select id="findBusinessContract" resultType="map">
+      SELECT * FROM business_contract
+      WHERE CERTID = #{CUSTOMER_CODE}
+    </select>
+
+    <select id="findCustomerInfo" resultType="map">
+      SELECT * FROM customer_info
+      WHERE CERTID = #{OWNER_IDCARD} AND CERTTYPE = #{CERT_TYPE}
+    </select>
+    <select id="findIndInfo" resultType="map">
+      SELECT * FROM ind_info
+      WHERE CERTID = #{OWNER_IDCARD} AND CERTTYPE = #{CERT_TYPE}
+    </select>
+    <update id="upDateIndInfo" parameterType="map">
+        UPDATE ind_info SET
+          fullname = #{OWNER_NAME},
+          PHONE = #{OWNER_PHONENO},
+          CERTTYPE = #{CERTTYPE},
+          EFFSTATUS = #{EFFSTATUS}
+        WHERE CERTID = #{OWNER_IDCARD}
+    </update>
+    <insert id="insertIndInfo">
+        INSERT INTO ind_info
+        (
+        CUSTOMERID,
+        fullname,
+        PHONE,
+        CERTTYPE,
+        EFFSTATUS,
+        INPUTDATE
+        )VALUES(
+        #{customerIdInd},
+        #{OWNER_NAME},
+        #{OWNER_PHONENO},
+        #{CERTTYPE},
+        #{EFFSTATUS},
+        DATE_FORMAT(NOW(),'%Y-%m-%d %T')
+        )
+    </insert>
+
+
+    <insert id="insertBusinessContract">
+        insert into business_contract
+        (
+        CERTID,
+        customername,
+        UserName,
+        phoneos,
+        businessrate,
+        ORDERSN,
+        loanno,
+        businesssum,
+        begindate,
+        enddate,
+        serialno,
+        customerid,
+        businesstype,
+        termmonth
+        ,paytimes
+        ,purpose
+        ,IsBookIn
+        ,RETURNFREQUENCY
+        ,PROJECTCODE
+        ,SERVORGNO
+        ,CURRENCY
+        ,ReCustomerID
+        )
+        VALUES(
+        #{CUSTOMER_CODE},
+        #{CUSTOMER_NAME},
+        #{OWNER_NAME},
+        #{OWNER_PHONENO},
+        #{EXECUTE_RATE},
+        #{ORDER_NO},
+        #{LOUS_NO},
+        #{LOAN_MONEY},
+        #{LOAN_START_DATE},
+        #{LOAN_END_DATE},
+        #{serialno},
+        #{customerid},
+        #{businesstype},
+        #{termmonth},
+        #{paytimes},
+        #{purpose},
+        #{IsBookIn},
+        #{RETURNFREQUENCY},
+        #{PROJECTCODE},
+        #{SERVORGNO},
+        #{CURRENCY},
+        #{ReCustomerID} )
+    </insert>
+    <insert id="insertCustomerContacts">
+        insert into customer_contacts
+        (
+          phone,
+          CONTACTSID,
+          CUSTOMERID,
+          RELATIONSHIP,
+          INPUTTIME
+        )
+        VALUES(
+        #{OWNER_PHONENO},
+        #{CONTACTSID},
+        #{customerid},
+        #{RELATIONSHIP},
+        DATE_FORMAT(NOW(),'%Y-%m-%d %T') )
+    </insert>
+</mapper>
